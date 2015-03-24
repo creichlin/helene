@@ -1,0 +1,42 @@
+<project default="dist" xmlns:ivy="antlib:org.apache.ivy.ant">
+  
+  <path id="compile.classpath">
+    <fileset dir="lib/runtime/jars">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="lib/runtime/bundles">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+  <target name="init">
+    <mkdir dir="build/bin"/>
+    <mkdir dir="dist"/>
+  </target>
+  
+  <target name="resolve" depends="init">
+    <ivy:retrieve pattern="lib/runtime/[type]s/[artifact]-[revision].[ext]" conf="runtime" refresh="true"/>
+    <ivy:retrieve pattern="lib/build/[type]s/[artifact]-[revision].[ext]" conf="build" refresh="true"/>
+    <ivy:retrieve pattern="lib/test/[type]s/[artifact]-[revision].[ext]" conf="test" refresh="true"/>
+  </target>
+  
+  <target name="compile" depends="resolve">
+    <javac srcdir="src" destdir="build/bin" target="1.7" source="1.7" debuglevel="lines,vars,source" debug="true">
+      <classpath refid="compile.classpath"/>
+    </javac>
+    <copy todir="build/bin">
+       <fileset dir="src" excludes="**/*.java"/>
+    </copy>
+  </target>
+  
+  <target name="dist" depends="compile">
+    <jar jarfile="dist/helene.jar" basedir="build/bin" includes="ch/kerbtier/helene/**" />
+  </target>
+  
+  <target name="publish-local" depends="dist" description="Publish this build into local repository">
+    <ivy:resolve/>
+    <ivy:publish pubrevision="1.0.0" status="release" resolver="local" forcedeliver="true" overwrite="true" conf="*">
+      <artifacts pattern="dist/[artifact].[ext]"/>
+    </ivy:publish>
+  </target>
+</project>
