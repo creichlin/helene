@@ -1,0 +1,16 @@
+post: {
+  title: string
+  author: user
+  date: date
+  content: string
+  comments: [{
+    name: string
+    email: string
+    content: string
+  }]
+  hits: [date]
+  meta: {
+    foo: string
+    bar: string
+  }
+}
