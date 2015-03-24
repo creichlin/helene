@@ -18,6 +18,7 @@ public class Formater {
     return "" + value;
   }
   
+  @SuppressWarnings("unchecked")
   public static <T> T parse(String data, Class<T> type) {
     if(String.class.isAssignableFrom(type)) {
       return (T)data;

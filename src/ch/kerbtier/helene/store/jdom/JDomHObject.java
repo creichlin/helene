@@ -2,10 +2,9 @@ package ch.kerbtier.helene.store.jdom;
 
 import java.lang.ref.WeakReference;
 import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -17,7 +16,6 @@ import ch.kerbtier.helene.Entity;
 import ch.kerbtier.helene.EntityList;
 import ch.kerbtier.helene.EntityMap;
 import ch.kerbtier.helene.HList;
-import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.HeleneUser;
 import ch.kerbtier.helene.ListenerReference;
@@ -28,29 +26,25 @@ import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
 
 public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
 
-  private static Map<Element, List<WeakReference<Runnable>>> events = new WeakHashMap<Element, List<WeakReference<Runnable>>>();
+  private static Map<Element, Map<String, List<WeakReference<Runnable>>>> events = new WeakHashMap<>();
 
   private EntityMap def;
-  private Document document;
-  private Element element;
 
   public JDomHObject() {
-    super(null);
+    super(null, null, null);
   }
 
   public JDomHObject(Document document, JDomHNode parent, Element element, EntityMap def) {
-    super(parent);
-    this.document = document;
-    this.element = element;
+    super(document, parent, element);
     this.def = def;
   }
 
-  public void init(Document document, Element element, EntityMap def) {
-    this.document = document;
-    this.element = element;
-    this.def = def;
+  public void init(Document document, Element element, EntityMap defp) {
+    super.init(document, null, element);
+    this.def = defp;
   }
 
+  @SuppressWarnings("unchecked")
   private <T> T getAs(String name, Class<T> expected) {
     Entity ent = def.get(name);
     if (!ent.is(expected)) {
@@ -65,10 +59,10 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
   public Object get(String name) {
     Entity ent = def.get(name);
 
-    Element sub = Util.get(element, name);
+    Element sub = Util.get(getElement(), name);
 
     if (ent.is(HObject.class)) {
-      return new JDomHObject(document, this, Util.getCreate(element, name), (EntityMap) ent);
+      return new JDomHObject(getDocument(), this, Util.getCreate(getElement(), name), (EntityMap) ent);
 
     } else if (ent.is(HList.class)) {
       EntityList el = (EntityList) ent;
@@ -118,8 +112,8 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
     Entity ent = def.get(name);
     if (ent.is(HList.class)) {
       if (((EntityList) ent).get().is(HObject.class)) {
-        Element list = Util.getCreate(element, name);
-        return new JDomHobjectList(document, this, list, (EntityList) ent);
+        Element list = Util.getCreate(getElement(), name);
+        return new JDomHobjectList(getDocument(), this, list, (EntityList) ent);
       }
     }
     throw new WrongFieldTypeException("expected " + HObject.class + " but found " + ent);
@@ -129,8 +123,8 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
     Entity ent = def.get(name);
     if (ent.is(HList.class)) {
       if (((EntityList) ent).get().is(expected)) {
-        Element list = Util.getCreate(element, name);
-        return new JDomHList<>(document, this, list, (EntityList) ent);
+        Element list = Util.getCreate(getElement(), name);
+        return new JDomHList<>(getDocument(), this, list, (EntityList) ent);
       }
     }
     throw new WrongFieldTypeException("expected " + expected + " but found " + ent);
@@ -183,12 +177,12 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
     Entity entity = def.get(name);
 
     if (value == null) {
-      Element e = Util.get(element, name);
+      Element e = Util.get(getElement(), name);
       if (e != null) {
-        element.removeChild(e);
+        getElement().removeChild(e);
       }
     } else if (entity.is(value.getClass())) {
-      Element e = Util.getCreate(element, name);
+      Element e = Util.getCreate(getElement(), name);
       e.setTextContent(Formater.format(value));
     } else {
       throw new WrongFieldTypeException("field '" + name + "' is of type '" + entity + "' instead of '"
@@ -210,20 +204,6 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof JDomHObject) {
-      JDomHObject o = (JDomHObject) obj;
-      return o.element.isSameNode(element);
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return element.hashCode();
-  }
-
-  @Override
   public HObject create(Map<String, Object> data) {
     for (String key : data.keySet()) {
       setData(key, data.get(key));
@@ -232,34 +212,34 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
   }
 
   private List<WeakReference<Runnable>> getChangeListeners(String name) {
-    if (!events.containsKey(element)) {
+    if (!events.containsKey(getElement())) {
       synchronized (events) {
-        if (!events.containsKey(element)) {
+        if (!events.containsKey(getElement())) {
 
-          events.put(element, new ArrayList<WeakReference<Runnable>>());
+          events.put(getElement(), new HashMap<String, List<WeakReference<Runnable>>>());
         }
       }
     }
-    return events.get(element);
+    
+    Map<String, List<WeakReference<Runnable>>> map = events.get(getElement());
+    
+    if (!map.containsKey(name)) {
+      synchronized (events) {
+        if (!map.containsKey(name)) {
+
+          map.put(name, new ArrayList<WeakReference<Runnable>>());
+        }
+      }
+    }
+    return map.get(name);
   }
 
   private boolean hasChangeListeners(String name) {
-    return events.containsKey(element);
+    return events.containsKey(getElement()) && events.get(getElement()).containsKey(name);
   }
   
   @Override
   public String toString() {
-    return element.toString();
-  }
-
-  @Override
-  public void delete() {
-    
-  }
-
-  @Override
-  public void delete(HNode node) {
-    // TODO Auto-generated method stub
-    
+    return getElement().toString();
   }
 }
