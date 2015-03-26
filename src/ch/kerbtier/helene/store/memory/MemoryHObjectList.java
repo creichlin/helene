@@ -10,6 +10,7 @@ import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.ListenerReference;
 import ch.kerbtier.helene.events.Listeners;
 import ch.kerbtier.helene.store.mod.EntitySubject;
 import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
@@ -90,7 +91,7 @@ public class MemoryHObjectList extends MemoryHNode implements HList<HObject>, En
   }
 
   @Override
-  public void onChange(Runnable runnable) {
-    onChange.onEvent(runnable);
+  public ListenerReference onChange(Runnable runnable) {
+    return onChange.onEvent(runnable);
   }
 }

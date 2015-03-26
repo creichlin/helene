@@ -13,6 +13,7 @@ import ch.kerbtier.helene.EntityList;
 import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.ListenerReference;
 import ch.kerbtier.helene.events.MappedListeners;
 
 public class JDomHList<T> extends JDomHNode implements HList<T> {
@@ -100,7 +101,7 @@ public class JDomHList<T> extends JDomHNode implements HList<T> {
 
 
   @Override
-  public void onChange(Runnable runnable) {
-    onChange.on(getElement(), runnable);
+  public ListenerReference onChange(Runnable runnable) {
+    return onChange.on(getElement(), runnable);
   }
 }

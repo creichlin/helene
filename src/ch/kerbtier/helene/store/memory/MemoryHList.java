@@ -8,6 +8,7 @@ import ch.kerbtier.helene.Entity;
 import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.ListenerReference;
 import ch.kerbtier.helene.events.Listeners;
 
 public class MemoryHList <X> extends MemoryHNode implements HList<X> {
@@ -74,7 +75,7 @@ public class MemoryHList <X> extends MemoryHNode implements HList<X> {
   }
 
   @Override
-  public void onChange(Runnable runnable) {
-    onChange.onEvent(runnable);
+  public ListenerReference onChange(Runnable runnable) {
+    return onChange.onEvent(runnable);
   }
 }

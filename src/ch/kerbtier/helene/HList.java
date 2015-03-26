@@ -1,5 +1,7 @@
 package ch.kerbtier.helene;
 
+import ch.kerbtier.helene.events.ListenerReference;
+
 public interface HList<T> extends HNode, Iterable<T> {
   int size();
   T get(int cnt);
@@ -8,5 +10,5 @@ public interface HList<T> extends HNode, Iterable<T> {
   void add(T value);
   void set(int i, T value);
   void delete(int i);
-  void onChange(Runnable runnable);
+  ListenerReference onChange(Runnable runnable);
 }
