@@ -10,6 +10,7 @@ import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.Listeners;
 import ch.kerbtier.helene.store.mod.EntitySubject;
 import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
 
@@ -17,7 +18,8 @@ public class MemoryHObjectList extends MemoryHNode implements HList<HObject>, En
   
   private MemoryStore store;
   private EntityMap entity;
-  private List<HObject> list = new ArrayList<HObject>();
+  private List<HObject> list = new ArrayList<>();
+  private Listeners onChange = new Listeners();
   
   public MemoryHObjectList(MemoryStore store, MemoryHNode parent, EntityMap entity) {
     super(parent);
@@ -54,6 +56,7 @@ public class MemoryHObjectList extends MemoryHNode implements HList<HObject>, En
     MemoryHObject mho = new MemoryHObject(store, this, entity);
     mho.create(data);
     list.add(mho);
+    onChange.trigger();
     return mho;
   }
 
@@ -75,6 +78,7 @@ public class MemoryHObjectList extends MemoryHNode implements HList<HObject>, En
   @Override
   public void delete(int i) {
     list.remove(i);
+    onChange.trigger();
   }
 
   @Override
@@ -83,5 +87,10 @@ public class MemoryHObjectList extends MemoryHNode implements HList<HObject>, En
     if(index > -1) {
       delete(index);
     }
+  }
+
+  @Override
+  public void onChange(Runnable runnable) {
+    onChange.onEvent(runnable);
   }
 }

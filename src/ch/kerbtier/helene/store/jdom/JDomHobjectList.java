@@ -12,8 +12,10 @@ import org.w3c.dom.NodeList;
 import ch.kerbtier.helene.EntityList;
 import ch.kerbtier.helene.EntityMap;
 import ch.kerbtier.helene.HList;
+import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.MappedListeners;
 import ch.kerbtier.helene.store.mod.EntitySubject;
 import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
 
@@ -22,6 +24,7 @@ public class JDomHobjectList extends JDomHNode implements HList<HObject>, Entity
   private static final String ITEM = "item";
   
   private EntityMap childDef;
+  private static MappedListeners<Element> onChange = new MappedListeners<>();
   
   public JDomHobjectList(Document document, JDomHNode parent, Element element, EntityList ent) {
     super(document, parent, element);
@@ -75,15 +78,29 @@ public class JDomHobjectList extends JDomHNode implements HList<HObject>, Entity
     getElement().appendChild(ne);
     JDomHObject jdh = new JDomHObject(getDocument(), this, ne, childDef);
     jdh.create(data);
+    onChange.trigger(getElement());
     return jdh;
   }
 
   @Override
   public void delete(int i) {
     NodeList nl = getElement().getElementsByTagName(ITEM);
-    
     if(i < nl.getLength()) {
       getElement().removeChild(nl.item(i));
+      onChange.trigger(getElement());
     }
+  }
+
+  @Override
+  public final void delete(HNode node) {
+    Element e = ((JDomHNode)node).getElement();
+    getElement().removeChild(e);
+    onChange.trigger(getElement());
+  }
+
+
+  @Override
+  public void onChange(Runnable runnable) {
+    onChange.on(getElement(), runnable).keepFor(this);
   }
 }

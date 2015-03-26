@@ -8,12 +8,14 @@ import ch.kerbtier.helene.Entity;
 import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.Listeners;
 
 public class MemoryHList <X> extends MemoryHNode implements HList<X> {
   
   private MemoryStore store;
   private Entity entity;
   private List<X> list = new ArrayList<>();
+  private Listeners onChange = new Listeners();
   
   public MemoryHList(MemoryStore store, MemoryHNode parent, Entity entity) {
     super(parent);
@@ -44,6 +46,7 @@ public class MemoryHList <X> extends MemoryHNode implements HList<X> {
   @Override
   public void add(X value) {
     list.add(value);
+    onChange.trigger();
   }
 
   @Override
@@ -59,6 +62,7 @@ public class MemoryHList <X> extends MemoryHNode implements HList<X> {
   @Override
   public void delete(int i) {
     list.remove(i);
+    onChange.trigger();
   }
 
   @Override
@@ -67,5 +71,10 @@ public class MemoryHList <X> extends MemoryHNode implements HList<X> {
     if(index > -1) {
       delete(index);
     }
+  }
+
+  @Override
+  public void onChange(Runnable runnable) {
+    onChange.onEvent(runnable);
   }
 }

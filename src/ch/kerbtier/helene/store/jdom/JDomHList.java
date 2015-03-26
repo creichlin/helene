@@ -11,7 +11,9 @@ import org.w3c.dom.NodeList;
 import ch.kerbtier.helene.Entity;
 import ch.kerbtier.helene.EntityList;
 import ch.kerbtier.helene.HList;
+import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.MappedListeners;
 
 public class JDomHList<T> extends JDomHNode implements HList<T> {
 
@@ -19,6 +21,8 @@ public class JDomHList<T> extends JDomHNode implements HList<T> {
   private static final String ITEM = "item";
   
   private Entity childDef;
+  
+  private static MappedListeners<Element> onChange = new MappedListeners<>();
   
   public JDomHList(Document document, JDomHNode parent, Element element, EntityList ent) {
     super(document, parent, element);
@@ -63,6 +67,7 @@ public class JDomHList<T> extends JDomHNode implements HList<T> {
     Element e = getDocument().createElement(ITEM);
     getElement().appendChild(e);
     e.setTextContent(Formater.format(value));
+    onChange.trigger(getElement());
   }
 
   @Override
@@ -83,5 +88,19 @@ public class JDomHList<T> extends JDomHNode implements HList<T> {
     if(i < nl.getLength()) {
       getElement().removeChild(nl.item(i));
     }
+    onChange.trigger(getElement());
+  }
+  
+  @Override
+  public final void delete(HNode node) {
+    Element e = ((JDomHNode)node).getElement();
+    getElement().removeChild(e);
+    onChange.trigger(getElement());
+  }
+
+
+  @Override
+  public void onChange(Runnable runnable) {
+    onChange.on(getElement(), runnable);
   }
 }

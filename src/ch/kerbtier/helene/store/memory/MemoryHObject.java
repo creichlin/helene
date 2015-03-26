@@ -1,11 +1,8 @@
 package ch.kerbtier.helene.store.memory;
 
-import java.lang.ref.WeakReference;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,8 +13,9 @@ import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.HeleneUser;
-import ch.kerbtier.helene.ListenerReference;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.ListenerReference;
+import ch.kerbtier.helene.events.MappedListeners;
 import ch.kerbtier.helene.exceptions.WrongFieldDataException;
 import ch.kerbtier.helene.exceptions.WrongFieldTypeException;
 import ch.kerbtier.helene.store.mod.EntitySubject;
@@ -29,7 +27,8 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   final EntityMap def;
 
   private final Map<String, Object> data = new HashMap<>();
-  private final Map<String, List<WeakReference<Runnable>>> listeners = new HashMap<>();
+  
+  private MappedListeners<String> listeners = new MappedListeners<>();
 
   public MemoryHObject(MemoryStore store, MemoryHNode parent, EntityMap def) {
     super(parent);
@@ -39,11 +38,7 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
 
   @Override
   public ListenerReference onChange(String attrib, Runnable run) {
-    if (!listeners.containsKey(attrib)) {
-      listeners.put(attrib, new ArrayList<WeakReference<Runnable>>());
-    }
-    listeners.get(attrib).add(new WeakReference<>(run));
-    return new ListenerReference(run);
+    return listeners.on(attrib, run);
   }
 
   @Override
@@ -124,18 +119,7 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   }
 
   private void trigger(String name) {
-    if (listeners.containsKey(name)) {
-      List<WeakReference<Runnable>> tor = new ArrayList<>();
-      for (WeakReference<Runnable> wr : listeners.get(name)) {
-        Runnable r = wr.get();
-        if (r != null) {
-          r.run();
-        } else {
-          tor.add(wr);
-        }
-      }
-      tor.removeAll(tor);
-    }
+    listeners.trigger(name);
   }
 
   @SuppressWarnings("unchecked")

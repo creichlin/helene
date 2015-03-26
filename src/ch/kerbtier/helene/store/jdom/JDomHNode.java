@@ -41,17 +41,10 @@ public abstract class JDomHNode implements HNode {
   }
 
   @Override
-  public final void delete(HNode node) {
-    Element e = ((JDomHNode)node).getElement();
-    getElement().removeChild(e);
-  }
-
-  
-  @Override
   public boolean equals(Object obj) {
     if (obj instanceof JDomHNode) {
       JDomHNode o = (JDomHNode) obj;
-      return o.element.isSameNode(element);
+      return o.element.equals(element);
     }
     return false;
   }

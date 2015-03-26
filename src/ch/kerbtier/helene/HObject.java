@@ -3,6 +3,8 @@ package ch.kerbtier.helene;
 import java.math.BigInteger;
 import java.util.Date;
 
+import ch.kerbtier.helene.events.ListenerReference;
+
 public interface HObject extends HNode {
   Object get(String name);
   

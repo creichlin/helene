@@ -1,11 +1,7 @@
 package ch.kerbtier.helene.store.jdom;
 
-import java.lang.ref.WeakReference;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -16,17 +12,19 @@ import ch.kerbtier.helene.Entity;
 import ch.kerbtier.helene.EntityList;
 import ch.kerbtier.helene.EntityMap;
 import ch.kerbtier.helene.HList;
+import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.HeleneUser;
-import ch.kerbtier.helene.ListenerReference;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.events.ListenerReference;
+import ch.kerbtier.helene.events.MappedListeners;
 import ch.kerbtier.helene.exceptions.WrongFieldTypeException;
 import ch.kerbtier.helene.store.mod.EntitySubject;
 import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
 
 public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
 
-  private static Map<Element, Map<String, List<WeakReference<Runnable>>>> events = new WeakHashMap<>();
+  private static Map<Element, MappedListeners<String>> events = new WeakHashMap<>();
 
   private EntityMap def;
 
@@ -158,8 +156,7 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
 
   @Override
   public ListenerReference onChange(String name, Runnable run) {
-    getChangeListeners(name).add(new WeakReference<>(run));
-    return new ListenerReference(run);
+    return getChangeListeners().on(name, run);
   }
 
   @Override
@@ -193,13 +190,8 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
   }
 
   private void trigger(String name) {
-    if (hasChangeListeners(name)) {
-      for (WeakReference<Runnable> r : getChangeListeners(name)) {
-        Runnable r2 = r.get();
-        if(r2 != null) {
-         r2.run();
-        }
-      }
+    if (hasChangeListeners()) {
+      getChangeListeners().trigger(name);
     }
   }
 
@@ -211,32 +203,29 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
     return this;
   }
 
-  private List<WeakReference<Runnable>> getChangeListeners(String name) {
+  private MappedListeners<String> getChangeListeners() {
     if (!events.containsKey(getElement())) {
       synchronized (events) {
         if (!events.containsKey(getElement())) {
-
-          events.put(getElement(), new HashMap<String, List<WeakReference<Runnable>>>());
+          events.put(getElement(), new MappedListeners<String>());
         }
       }
     }
-    
-    Map<String, List<WeakReference<Runnable>>> map = events.get(getElement());
-    
-    if (!map.containsKey(name)) {
-      synchronized (events) {
-        if (!map.containsKey(name)) {
-
-          map.put(name, new ArrayList<WeakReference<Runnable>>());
-        }
-      }
-    }
-    return map.get(name);
+    return events.get(getElement());
   }
 
-  private boolean hasChangeListeners(String name) {
-    return events.containsKey(getElement()) && events.get(getElement()).containsKey(name);
+  private boolean hasChangeListeners() {
+    return events.containsKey(getElement());
   }
+  
+  @Override
+  public final void delete(HNode node) {
+    Element e = ((JDomHNode)node).getElement();
+    getElement().removeChild(e);
+    // TODO change event for attribute?
+  }
+
+
   
   @Override
   public String toString() {
