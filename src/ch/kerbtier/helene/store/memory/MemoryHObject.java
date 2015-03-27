@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import ch.kerbtier.helene.Entity;
@@ -275,4 +276,35 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
       }
     }
   }
+  
+  @Override
+  public Set<String> getProperties() {
+    return def.getProperties();
+  }
+
+  @Override
+  public String getName() {
+    if(getParent() != null) {
+      return getParent().getName(this);
+    }
+    return "";
+  }
+
+  @Override
+  public String getName(HNode node) {
+    String r = "";
+    if(getParent() != null) {
+      r = getParent().getName(this) + ".";
+    }
+    
+    
+    for(Entry<String, Object> e: data.entrySet()) {
+      if(e.getValue().equals(node)) {
+        return r + e.getKey();
+      }
+    }
+    
+    return "$no name found";
+  }
+
 }

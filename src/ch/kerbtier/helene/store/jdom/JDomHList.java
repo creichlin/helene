@@ -17,8 +17,6 @@ import ch.kerbtier.helene.events.ListenerReference;
 import ch.kerbtier.helene.events.MappedListeners;
 
 public class JDomHList<T> extends JDomHNode implements HList<T> {
-
-  
   private static final String ITEM = "item";
   
   private Entity childDef;
@@ -99,9 +97,13 @@ public class JDomHList<T> extends JDomHNode implements HList<T> {
     onChange.trigger(getElement());
   }
 
-
   @Override
   public ListenerReference onChange(Runnable runnable) {
     return onChange.on(getElement(), runnable);
+  }
+  
+  @Override
+  public String getName(HNode node) {
+    return getParent().getName(this);
   }
 }

@@ -94,4 +94,9 @@ public class MemoryHObjectList extends MemoryHNode implements HList<HObject>, En
   public ListenerReference onChange(Runnable runnable) {
     return onChange.onEvent(runnable);
   }
+
+  @Override
+  public String getName(HNode hNode) {
+    return getParent().getName(this);
+  }
 }

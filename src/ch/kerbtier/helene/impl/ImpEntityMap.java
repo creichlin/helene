@@ -3,6 +3,7 @@ package ch.kerbtier.helene.impl;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import ch.kerbtier.helene.DateEntity;
 import ch.kerbtier.helene.Entity;
@@ -16,7 +17,7 @@ import ch.kerbtier.helene.exceptions.UndefinedFieldException;
 
 public class ImpEntityMap extends ImpEntity implements EntityMap {
 
-  private Map<String, Entity> map = new HashMap<String, Entity>();
+  private Map<String, Entity> map = new HashMap<>();
 
   @Override
   public Iterator<String> iterator() {
@@ -74,6 +75,11 @@ public class ImpEntityMap extends ImpEntity implements EntityMap {
   @Override
   public Class<?> isOf() {
     return HObject.class;
+  }
+
+  @Override
+  public Set<String> getProperties() {
+    return map.keySet();
   }
 
 }

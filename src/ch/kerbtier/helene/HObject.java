@@ -2,6 +2,7 @@ package ch.kerbtier.helene;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Set;
 
 import ch.kerbtier.helene.events.ListenerReference;
 
@@ -22,6 +23,10 @@ public interface HObject extends HNode {
   <X> HList<HList<X>> getLists(Class<X> type);
   
   ListenerReference onChange(String attrib, Runnable run);
+  
+  Set<String> getProperties();
+  
+  String getName();
   
   ModifiableNode update();
 }

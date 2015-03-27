@@ -1,5 +1,7 @@
 package ch.kerbtier.helene;
 
+import java.util.Set;
+
 public interface EntityMap extends Entity, Iterable<String> {
   DateEntity getDate(String name);
   IntegerEntity getInteger(String name);
@@ -8,4 +10,5 @@ public interface EntityMap extends Entity, Iterable<String> {
   EntityList getList(String name);
   EntityMap getMap(String name);
   Entity get(String name);
+  Set<String> getProperties();
 }

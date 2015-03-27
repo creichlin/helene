@@ -18,6 +18,21 @@ public class BasicStore extends StorImpls {
   public BasicStore(StoreFactory sf) {
     super(sf);
   }
+  
+  @Test
+  public void checkName() {
+    assertEquals("post", store.getObject("post").getName());
+  }
+
+  @Test
+  public void checkListsName() {
+    
+    ModifiableNode mn = store.getObject("post").getObjects("comments").add();
+    mn.set("name", "lalala");
+    mn.commit();
+    
+    assertEquals("post.comments", store.getObject("post").getObjects("comments").get(0).getName());
+  }
 
   @Test(expected = WrongFieldTypeException.class)
   public void getByWrongType() {

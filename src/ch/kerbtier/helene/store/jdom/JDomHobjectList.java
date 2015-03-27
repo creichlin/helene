@@ -104,4 +104,9 @@ public class JDomHobjectList extends JDomHNode implements HList<HObject>, Entity
   public ListenerReference onChange(Runnable runnable) {
     return onChange.on(getElement(), runnable).keepFor(this);
   }
+
+  @Override
+  public String getName(HNode node) {
+    return getParent().getName(this);
+  }
 }

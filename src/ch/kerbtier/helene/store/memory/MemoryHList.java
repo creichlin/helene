@@ -78,4 +78,9 @@ public class MemoryHList <X> extends MemoryHNode implements HList<X> {
   public ListenerReference onChange(Runnable runnable) {
     return onChange.onEvent(runnable);
   }
+
+  @Override
+  public String getName(HNode node) {
+    return getParent().getName(node);
+  }
 }

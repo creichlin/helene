@@ -3,6 +3,7 @@ package ch.kerbtier.helene.store.jdom;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.w3c.dom.Document;
@@ -230,5 +231,30 @@ public class JDomHObject extends JDomHNode implements HObject, EntitySubject {
   @Override
   public String toString() {
     return getElement().toString();
+  }
+
+  @Override
+  public Set<String> getProperties() {
+    return def.getProperties();
+  }
+
+  @Override
+  public String getName(HNode node) {
+    String r = "";
+    if(getParent() != null) {
+      r = getParent().getName(this) + ".";
+    }
+    
+    return r + ((JDomHNode)node).getElement().getNodeName();
+  }
+
+  @Override
+  public String getName() {
+    
+    if(getParent() != null) {
+      return getParent().getName(this);
+    }
+    
+    return "$";
   }
 }
