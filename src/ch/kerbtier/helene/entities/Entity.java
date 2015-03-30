@@ -1,4 +1,4 @@
-package ch.kerbtier.helene;
+package ch.kerbtier.helene.entities;
 
 public interface Entity {
   boolean is(Class<?> type);

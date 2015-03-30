@@ -1,10 +1,12 @@
 post: {
   title: string
   author: user
+  slug: slug
   date: date
   content: string
   comments: [{
     name: string
+    slug: slug
     email: string
     content: string
   }]

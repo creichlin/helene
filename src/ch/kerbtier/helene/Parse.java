@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.impl.ImpEntityMap;
 import ch.kerbtier.helene.parser.HeleneLexer;
 import ch.kerbtier.helene.parser.HeleneParser;

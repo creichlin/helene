@@ -9,6 +9,7 @@ public interface ModifiableNode {
   void set(String name, String value);
   void set(String name, BigInteger value);
   void set(String name, HeleneUser value);
+  void set(String name, HSlug value);
 
   HObject commit();
 }

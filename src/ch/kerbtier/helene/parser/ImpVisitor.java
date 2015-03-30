@@ -7,6 +7,7 @@ import ch.kerbtier.helene.impl.ImpEntity;
 import ch.kerbtier.helene.impl.ImpEntityList;
 import ch.kerbtier.helene.impl.ImpEntityMap;
 import ch.kerbtier.helene.impl.ImpIntegerEntity;
+import ch.kerbtier.helene.impl.ImpSlugEntity;
 import ch.kerbtier.helene.impl.ImpStringEntity;
 import ch.kerbtier.helene.impl.ImpUserEntity;
 import ch.kerbtier.helene.parser.HeleneParser.DateContext;
@@ -15,6 +16,7 @@ import ch.kerbtier.helene.parser.HeleneParser.IntegerContext;
 import ch.kerbtier.helene.parser.HeleneParser.ListContext;
 import ch.kerbtier.helene.parser.HeleneParser.MapContext;
 import ch.kerbtier.helene.parser.HeleneParser.RootContext;
+import ch.kerbtier.helene.parser.HeleneParser.SlugContext;
 import ch.kerbtier.helene.parser.HeleneParser.StringContext;
 import ch.kerbtier.helene.parser.HeleneParser.UserContext;
 
@@ -63,6 +65,11 @@ public class ImpVisitor extends HeleneBaseVisitor<ImpEntity> {
   @Override
   public ImpEntity visitUser(UserContext ctx) {
     return new ImpUserEntity();
+  }
+
+  @Override
+  public ImpEntity visitSlug(SlugContext ctx) {
+    return new ImpSlugEntity();
   }
 
   @Override

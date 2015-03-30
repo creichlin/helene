@@ -5,18 +5,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.kerbtier.helene.Entity;
-import ch.kerbtier.helene.EntityMap;
 import ch.kerbtier.helene.HObject;
+import ch.kerbtier.helene.HSlug;
 import ch.kerbtier.helene.HeleneUser;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.entities.Entity;
+import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.exceptions.WrongFieldTypeException;
 
 public class HObjectModifiableNode implements ModifiableNode {
   
   private EntitySubject subject;
   private EntityMap entityMap;
-  private Map<String, Object> data = new HashMap<String, Object>();
+  private Map<String, Object> data = new HashMap<>();
 
   
   public HObjectModifiableNode(EntitySubject subject, EntityMap entityMap) {
@@ -47,6 +48,11 @@ public class HObjectModifiableNode implements ModifiableNode {
   @Override
   public void set(String name, HeleneUser value) {
     set(name, (Object) value);
+  }
+
+  @Override
+  public void set(String name, HSlug value) {
+    set(name, (Object)value);
   }
 
   private void set(String name, Object value) {

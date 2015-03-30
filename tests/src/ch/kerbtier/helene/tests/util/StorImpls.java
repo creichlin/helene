@@ -10,7 +10,6 @@ import org.junit.runners.Parameterized;
 import ch.kerbtier.helene.Parse;
 import ch.kerbtier.helene.Store;
 import ch.kerbtier.helene.impl.ImpEntityMap;
-import ch.kerbtier.helene.store.jdom.JDomStore;
 import ch.kerbtier.helene.store.memory.MemoryStore;
 
 @RunWith(Parameterized.class)
@@ -30,14 +29,14 @@ public class StorImpls {
       }
     };
     
-    StoreFactory dom = new StoreFactory() {
+    /*StoreFactory dom = new StoreFactory() {
       @Override
       public Store create() {
         return new JDomStore(root);
       }
-    };
+    };*/
     
-    return Arrays.asList(new Object[][]{{mem}, {dom}});
+    return Arrays.asList(new Object[][]{{mem}});
   }
   
   public StorImpls(StoreFactory sf) {

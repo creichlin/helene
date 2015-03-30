@@ -91,4 +91,12 @@ public class HeleneBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitEntity(@NotNull HeleneParser.EntityContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitSlug(@NotNull HeleneParser.SlugContext ctx) { return visitChildren(ctx); }
 }

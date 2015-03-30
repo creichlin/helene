@@ -2,7 +2,7 @@ package ch.kerbtier.helene.impl;
 
 import java.util.Date;
 
-import ch.kerbtier.helene.DateEntity;
+import ch.kerbtier.helene.entities.DateEntity;
 
 public class ImpDateEntity extends ImpEntity implements DateEntity {
 

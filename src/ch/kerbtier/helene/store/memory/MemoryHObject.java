@@ -1,20 +1,19 @@
 package ch.kerbtier.helene.store.memory;
 
-import java.math.BigInteger;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import ch.kerbtier.helene.Entity;
-import ch.kerbtier.helene.EntityList;
-import ch.kerbtier.helene.EntityMap;
 import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.HObject;
-import ch.kerbtier.helene.HeleneUser;
+import ch.kerbtier.helene.HSlug;
 import ch.kerbtier.helene.ModifiableNode;
+import static ch.kerbtier.helene.Types.*;
+import ch.kerbtier.helene.entities.Entity;
+import ch.kerbtier.helene.entities.EntityList;
+import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.events.ListenerReference;
 import ch.kerbtier.helene.events.MappedListeners;
 import ch.kerbtier.helene.exceptions.WrongFieldDataException;
@@ -24,12 +23,11 @@ import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
 
 public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject {
 
-  final MemoryStore store;
-  final EntityMap def;
+  MemoryStore store;
+  EntityMap def;
 
-  private final Map<String, Object> data = new HashMap<>();
-  
-  private MappedListeners<String> listeners = new MappedListeners<>();
+  private Map<String, Object> data = new HashMap<>();
+  private MappedListeners<String> listeners = new MappedListeners<>();;
 
   public MemoryHObject(MemoryStore store, MemoryHNode parent, EntityMap def) {
     super(parent);
@@ -38,20 +36,29 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   }
 
   @Override
-  public ListenerReference onChange(String attrib, Runnable run) {
-    return listeners.on(attrib, run);
+  protected void reconstruct(MemoryHNode parent, MemoryStore storep, Entity defp) {
+    setParent(parent);
+    this.store = storep;
+    this.def = (EntityMap) defp;
+    listeners = new MappedListeners<>();
+
+    for (String key : data.keySet()) {
+      Entity ent = this.def.get(key);
+      if (ent.is(OBJECT) || ent.is(LIST)) {
+        ((MemoryHNode) data.get(key)).reconstruct(this, store, ent);
+      }
+    }
+  }
+
+  public MemoryHObject(EntityMap def) {
+    super(null);
+    this.store = (MemoryStore) this;
+    this.def = def;
   }
 
   @Override
-  public Object get(String name) {
-    Entity entity = def.get(name);
-    if (entity.is(HList.class)) {
-      Entity subType = ((EntityList) entity).get();
-      if (subType.is(HObject.class)) {
-        return getObjects(name);
-      }
-    }
-    return getObjData(name);
+  public ListenerReference onChange(String attrib, Runnable run) {
+    return listeners.on(attrib, run);
   }
 
   @Override
@@ -63,31 +70,6 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
     return def;
   }
 
-  @Override
-  public Date getDate(String name) {
-    return getData(name, Date.class);
-  }
-
-  @Override
-  public String getString(String name) {
-    return getData(name, String.class);
-  }
-
-  @Override
-  public BigInteger getBigInteger(String name) {
-    return getData(name, BigInteger.class);
-  }
-
-  @Override
-  public HeleneUser getUser(String name) {
-    return getData(name, HeleneUser.class);
-  }
-
-  @Override
-  public HObject getObject(String name) {
-    return getData(name, HObject.class);
-  }
-
   /**
    * for commiting data
    * 
@@ -97,11 +79,31 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   private void setData(String name, Object value) {
     Entity entity = def.get(name);
 
+    Object oldValue = data.get(name);
+
     if (value == null) {
+      if (oldValue != null) {
+        if (entity.is(SLUG)) {
+          store.release((HSlug) oldValue);
+        }
+      }
       data.remove(name);
       return;
     }
     if (entity.is(value.getClass())) {
+      if (entity.is(SLUG)) {
+        if (oldValue != null) {
+          if (!oldValue.equals(value)) {
+            store.release((HSlug) oldValue);
+            // might throw a duplicate slug exception
+            store.register((HSlug) value, this);
+          }
+        } else { // old value is null
+          // might throw a duplicate slug exception
+          System.out.println(store);
+          store.register((HSlug) value, this);
+        }
+      }
       data.put(name, value);
     } else {
       throw new WrongFieldTypeException("field '" + name + "' is of type '" + entity + "' instead of '"
@@ -113,7 +115,8 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
 
   @Override
   public HObject create(Map<String, Object> newData) {
-    for(String key: newData.keySet()) {
+    // TODO: slug processing must go here...
+    for (String key : newData.keySet()) {
       setData(key, newData.get(key));
     }
     return this;
@@ -123,56 +126,56 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
     listeners.trigger(name);
   }
 
-  @SuppressWarnings("unchecked")
-  private <X> X getData(String name, Class<X> expected) {
-    Entity entity = def.get(name);
-    if (entity.is(expected)) {
-      Object value = data.get(name);
-      if (value != null) {
-        if (entity.is(value.getClass())) {
-          return (X) value;
-        } else {
-          throw new WrongFieldDataException("invalid datatype in field '" + name + "' found '" + value.getClass()
-              + "' instead of '" + expected.getName() + "'");
-        }
-      } else {
-
-        if (entity.is(HObject.class)) { // create empty hobject
-          data.put(name, new MemoryHObject(store, this, (EntityMap) entity));
-          return (X) data.get(name);
-        } else {
-          return null; // TODO default
-        }
-      }
-    }
-    throw new WrongFieldTypeException("field '" + name + "' is of type '" + entity + "' instead of '"
-        + expected.getName() + "'");
+  @Override
+  public Object get(String name) {
+    return get(name, null);
   }
 
-  private Object getObjData(String name) {
-    Entity entity = def.get(name);
+  @Override
+  @SuppressWarnings("unchecked")
+  public <X> X get(String name, Class<X> expected) {
 
-    Object value = data.get(name);
-    if (value != null) {
-      if (entity.is(value.getClass())) {
-        return value;
+    if (name.startsWith("#")) { // its a slug
+      if (HObject.class.isAssignableFrom(expected) || expected == null) {
+        return (X) store.get(new HSlug(name));
       } else {
-        throw new WrongFieldDataException("invalid datatype in field '" + name + "' found '" + value.getClass()
-            + "' instead of '" + entity.getType() + "'");
+        throw new WrongFieldTypeException("Slug return type is always HObject");
       }
     } else {
+      Entity entity = def.get(name);
+      if (expected == null || entity.is(expected)) {
+        Object value = data.get(name);
+        if (value != null) {
+          if (entity.is(value.getClass())) {
+            return (X) value;
+          } else {
+            // field is different type then there is
+            data.remove(name);
+            return get(name, expected);
+            /*
+            throw new WrongFieldDataException("invalid datatype in field '" + name + "' found '" + value.getClass()
+                + "'");*/
+          }
+        } else {
 
-      if (entity.is(HObject.class)) { // create empty hobject
-        data.put(name, new MemoryHObject(store, this, (EntityMap) entity));
-        return data.get(name);
-      } else {
-        return null; // TODO default
+          if (entity.is(HObject.class)) { // create empty hobject
+            data.put(name, new MemoryHObject(store, this, (EntityMap) entity));
+            return (X) data.get(name);
+          } else {
+            return null; // TODO default
+          }
+        }
       }
+
+      throw new WrongFieldTypeException("field '" + name + "' is of type '" + entity + "' instead of '"
+          + expected.getName() + "'");
+
     }
   }
 
   @SuppressWarnings("unchecked")
-  private <X, Y> HList<X> checkDataList(String name, Class<X> expected, Creator<Y> creator) {
+  @Override
+  public <X> HList<X> getList(String name, Class<X> expected) {
     Entity entity = def.get(name);
 
     if (entity.is(HList.class)) {
@@ -187,7 +190,7 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
                 + "' instead of '" + expected.getName() + "'");
           }
         } else {
-          data.put(name, creator.create());
+          data.put(name, createFor(name, expected));
           return (HList<X>) data.get(name);
         }
       } else {
@@ -200,66 +203,14 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
     }
   }
 
-  @Override
-  public HList<HObject> getObjects(final String name) {
-    return checkDataList(name, HObject.class, new Creator<HObject>() {
-      @Override
-      public HList<HObject> create() {
-        return new MemoryHObjectList(store, MemoryHObject.this, (EntityMap) ((EntityList) def.get(name)).get());
-      }
-    });
-  }
-
-  @Override
-  public HList<Date> getDates(final String name) {
-    return checkDataList(name, Date.class, new Creator<Date>() {
-
-      @Override
-      public HList<Date> create() {
-        return new MemoryHList<>(store, MemoryHObject.this, ((EntityList) def.get(name)).get());
-      }
-
-    });
-  }
-
-  @Override
-  public HList<String> getStrings(final String name) {
-    return checkDataList(name, String.class, new Creator<Date>() {
-      @Override
-      public HList<Date> create() {
-        return new MemoryHList<>(store, MemoryHObject.this, ((EntityList) def.get(name)).get());
-      }
-    });
-  }
-
-  @Override
-  public HList<BigInteger> getIntegers(final String name) {
-    return checkDataList(name, BigInteger.class, new Creator<BigInteger>() {
-      @Override
-      public HList<BigInteger> create() {
-        return new MemoryHList<>(store, MemoryHObject.this, ((EntityList) def.get(name)).get());
-      }
-    });
-  }
-
-  @Override
-  public HList<HeleneUser> getUsers(final String name) {
-    return checkDataList(name, HeleneUser.class, new Creator<HeleneUser>() {
-      @Override
-      public HList<HeleneUser> create() {
-        return new MemoryHList<>(store, MemoryHObject.this, ((EntityList) def.get(name)).get());
-      }
-    });
-  }
-
-  @Override
-  public <X> HList<HList<X>> getLists(Class<X> type) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  interface Creator<X> {
-    HList<X> create();
+  private HNode createFor(String name, Class<?> type) {
+    if (HObject.class.isAssignableFrom(type)) {
+      return new MemoryHObjectList(store, MemoryHObject.this, (EntityMap) ((EntityList) def.get(name)).get());
+    } else if (HList.class.isAssignableFrom(type)) {
+      return null; // TODO lists of lists not supported yet
+    } else {
+      return new MemoryHList<>(store, MemoryHObject.this, ((EntityList) def.get(name)).get());
+    }
   }
 
   @Override
@@ -269,14 +220,14 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
 
   @Override
   public void delete(HNode node) {
-    for(Entry<String, Object> e: data.entrySet()) {
-      if(e.getValue().equals(node)) {
+    for (Entry<String, Object> e : data.entrySet()) {
+      if (e.getValue().equals(node)) {
         data.remove(e.getKey());
         return;
       }
     }
   }
-  
+
   @Override
   public Set<String> getProperties() {
     return def.getProperties();
@@ -284,7 +235,7 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
 
   @Override
   public String getName() {
-    if(getParent() != null) {
+    if (getParent() != null) {
       return getParent().getName(this);
     }
     return "";
@@ -293,17 +244,16 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   @Override
   public String getName(HNode node) {
     String r = "";
-    if(getParent() != null) {
+    if (getParent() != null) {
       r = getParent().getName(this) + ".";
     }
-    
-    
-    for(Entry<String, Object> e: data.entrySet()) {
-      if(e.getValue().equals(node)) {
+
+    for (Entry<String, Object> e : data.entrySet()) {
+      if (e.getValue().equals(node)) {
         return r + e.getKey();
       }
     }
-    
+
     return "$no name found";
   }
 

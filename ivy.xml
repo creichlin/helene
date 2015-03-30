@@ -17,5 +17,6 @@
     <dependency conf="runtime->default" org="org.antlr" name="antlr4-runtime" rev="4.2.2"/>
     <dependency conf="runtime->default;build->default" org="org.antlr" name="antlr4-runtime" rev="4.3"/>
     <dependency conf="build->default" org="org.antlr" name="antlr4" rev="4.3"/>
+    <dependency conf="runtime->default" org="com.thoughtworks.xstream" name="xstream" rev="1.4.8"/>
   </dependencies>
 </ivy-module>

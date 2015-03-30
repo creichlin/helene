@@ -1,6 +1,6 @@
 package ch.kerbtier.helene.impl;
 
-import ch.kerbtier.helene.IntegerEntity;
+import ch.kerbtier.helene.entities.IntegerEntity;
 
 public class ImpIntegerEntity extends ImpEntity implements IntegerEntity {
 

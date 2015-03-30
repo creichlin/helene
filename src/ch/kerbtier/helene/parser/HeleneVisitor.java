@@ -80,4 +80,11 @@ public interface HeleneVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitEntity(@NotNull HeleneParser.EntityContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link HeleneParser#slug}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSlug(@NotNull HeleneParser.SlugContext ctx);
 }

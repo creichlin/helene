@@ -5,14 +5,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import ch.kerbtier.helene.DateEntity;
-import ch.kerbtier.helene.Entity;
-import ch.kerbtier.helene.EntityList;
-import ch.kerbtier.helene.EntityMap;
 import ch.kerbtier.helene.HObject;
-import ch.kerbtier.helene.IntegerEntity;
-import ch.kerbtier.helene.StringEntity;
-import ch.kerbtier.helene.UserEntity;
+import ch.kerbtier.helene.entities.Entity;
+import ch.kerbtier.helene.entities.EntityList;
+import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.exceptions.UndefinedFieldException;
 
 public class ImpEntityMap extends ImpEntity implements EntityMap {
@@ -22,36 +18,6 @@ public class ImpEntityMap extends ImpEntity implements EntityMap {
   @Override
   public Iterator<String> iterator() {
     return map.keySet().iterator();
-  }
-
-  @Override
-  public DateEntity getDate(String name) {
-    return (DateEntity) map.get(name);
-  }
-
-  @Override
-  public IntegerEntity getInteger(String name) {
-    return (IntegerEntity) map.get(name);
-  }
-
-  @Override
-  public StringEntity getString(String name) {
-    return (StringEntity) map.get(name);
-  }
-
-  @Override
-  public UserEntity getUser(String name) {
-    return (UserEntity) map.get(name);
-  }
-
-  @Override
-  public EntityList getList(String name) {
-    return (EntityList) map.get(name);
-  }
-
-  @Override
-  public EntityMap getMap(String name) {
-    return (EntityMap) map.get(name);
   }
 
   @Override
@@ -82,4 +48,13 @@ public class ImpEntityMap extends ImpEntity implements EntityMap {
     return map.keySet();
   }
 
+  @Override
+  public EntityMap getObject(String name) {
+    return (EntityMap)map.get(name);
+  }
+
+  @Override
+  public EntityList getList(String name) {
+    return (EntityList)map.get(name);
+  }
 }

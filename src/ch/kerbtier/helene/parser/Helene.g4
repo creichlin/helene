@@ -5,9 +5,11 @@ root            : entity+;
 entity          : identifier ':'  type;
 
 
-type            : string | user | date | integer | list | map;
+type            : string | user | date | integer | slug | list | map;
 
 string          : STRING;
+
+slug            : SLUG;
 
 user            : USER;
 
@@ -20,9 +22,11 @@ list            : '[' type ']';
 map             : '{' entity+ '}';
 
 
-identifier        : IDENTIFIER | STRING | USER | DATE | INTEGER;
+identifier        : IDENTIFIER | STRING | USER | DATE | INTEGER | SLUG;
 
 STRING            : 'string';
+
+SLUG              : 'slug';
 
 USER              : 'user';
 

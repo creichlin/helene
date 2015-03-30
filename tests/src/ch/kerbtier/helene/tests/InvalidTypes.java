@@ -22,7 +22,7 @@ public class InvalidTypes extends StorImpls {
 
   @Test(expected = UndefinedFieldException.class)
   public void undefinedBigInteger() {
-    store.getBigInteger("noInt");
+    store.getInteger("noInt");
   }
 
   @Test(expected = UndefinedFieldException.class)
