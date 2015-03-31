@@ -2,14 +2,18 @@ package ch.kerbtier.helene.events;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Listeners {
   private final List<WeakReference<Runnable>> listeners = new ArrayList<>();
+  private final Set<Runnable> hard = new HashSet<>();
 
   public ListenerReference onEvent(Runnable run) {
     listeners.add(new WeakReference<>(run));
-    return new ListenerReference(run);
+    hard.add(run);
+    return new ListenerReference(this, run);
   }
 
   public void trigger() {
@@ -23,5 +27,9 @@ public class Listeners {
       }
     }
     tor.removeAll(tor);
+  }
+
+  public void makeWeak(Runnable runnable) {
+    hard.remove(runnable);
   }
 }

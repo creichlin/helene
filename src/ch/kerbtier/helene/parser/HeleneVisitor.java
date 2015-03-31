@@ -26,6 +26,13 @@ public interface HeleneVisitor<T> extends ParseTreeVisitor<T> {
 	T visitIdentifier(@NotNull HeleneParser.IdentifierContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link HeleneParser#blob}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlob(@NotNull HeleneParser.BlobContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link HeleneParser#string}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

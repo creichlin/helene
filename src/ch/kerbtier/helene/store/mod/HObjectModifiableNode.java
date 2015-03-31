@@ -1,6 +1,7 @@
 package ch.kerbtier.helene.store.mod;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +56,12 @@ public class HObjectModifiableNode implements ModifiableNode {
     set(name, (Object)value);
   }
 
-  private void set(String name, Object value) {
+  @Override
+  public void set(String name, ByteBuffer value) {
+    set(name, (Object)value);
+  }
+
+  public void set(String name, Object value) {
     Entity entity = entityMap.get(name);
     
     if(value == null) {
@@ -65,4 +71,5 @@ public class HObjectModifiableNode implements ModifiableNode {
     }
     data.put(name, value);
   }
+
 }

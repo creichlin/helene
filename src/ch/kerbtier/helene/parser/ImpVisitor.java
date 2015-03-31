@@ -2,6 +2,7 @@ package ch.kerbtier.helene.parser;
 
 import java.util.List;
 
+import ch.kerbtier.helene.impl.ImpBlobEntity;
 import ch.kerbtier.helene.impl.ImpDateEntity;
 import ch.kerbtier.helene.impl.ImpEntity;
 import ch.kerbtier.helene.impl.ImpEntityList;
@@ -10,6 +11,7 @@ import ch.kerbtier.helene.impl.ImpIntegerEntity;
 import ch.kerbtier.helene.impl.ImpSlugEntity;
 import ch.kerbtier.helene.impl.ImpStringEntity;
 import ch.kerbtier.helene.impl.ImpUserEntity;
+import ch.kerbtier.helene.parser.HeleneParser.BlobContext;
 import ch.kerbtier.helene.parser.HeleneParser.DateContext;
 import ch.kerbtier.helene.parser.HeleneParser.EntityContext;
 import ch.kerbtier.helene.parser.HeleneParser.IntegerContext;
@@ -49,6 +51,11 @@ public class ImpVisitor extends HeleneBaseVisitor<ImpEntity> {
   @Override
   public ImpEntity visitInteger(IntegerContext ctx) {
     return new ImpIntegerEntity();
+  }
+
+  @Override
+  public ImpEntity visitBlob(BlobContext ctx) {
+    return new ImpBlobEntity();
   }
 
   @Override

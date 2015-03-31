@@ -11,7 +11,7 @@ public class MappedListeners<T> {
       listeners.put(name, new Listeners());
     }
     listeners.get(name).onEvent(run);
-    return new ListenerReference(run);
+    return new ListenerReference(listeners.get(name), run);
   }
 
   public void trigger(T name) {

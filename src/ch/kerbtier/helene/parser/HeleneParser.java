@@ -18,18 +18,19 @@ public class HeleneParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__4=1, T__3=2, T__2=3, T__1=4, T__0=5, STRING=6, SLUG=7, USER=8, DATE=9, 
-		INTEGER=10, IDENTIFIER=11, BLOCK_COMMENT=12, EOL_COMMENT=13, WS=14;
+		INTEGER=10, BLOB=11, IDENTIFIER=12, BLOCK_COMMENT=13, EOL_COMMENT=14, 
+		WS=15;
 	public static final String[] tokenNames = {
 		"<INVALID>", "':'", "'{'", "'['", "'}'", "']'", "'string'", "'slug'", 
-		"'user'", "'date'", "'integer'", "IDENTIFIER", "BLOCK_COMMENT", "EOL_COMMENT", 
-		"WS"
+		"'user'", "'date'", "'integer'", "'blob'", "IDENTIFIER", "BLOCK_COMMENT", 
+		"EOL_COMMENT", "WS"
 	};
 	public static final int
 		RULE_root = 0, RULE_entity = 1, RULE_type = 2, RULE_string = 3, RULE_slug = 4, 
-		RULE_user = 5, RULE_date = 6, RULE_integer = 7, RULE_list = 8, RULE_map = 9, 
-		RULE_identifier = 10;
+		RULE_user = 5, RULE_date = 6, RULE_blob = 7, RULE_integer = 8, RULE_list = 9, 
+		RULE_map = 10, RULE_identifier = 11;
 	public static final String[] ruleNames = {
-		"root", "entity", "type", "string", "slug", "user", "date", "integer", 
+		"root", "entity", "type", "string", "slug", "user", "date", "blob", "integer", 
 		"list", "map", "identifier"
 	};
 
@@ -77,19 +78,19 @@ public class HeleneParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(23); 
+			setState(25); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(22); entity();
+				setState(24); entity();
 				}
 				}
-				setState(25); 
+				setState(27); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << SLUG) | (1L << USER) | (1L << DATE) | (1L << INTEGER) | (1L << IDENTIFIER))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << SLUG) | (1L << USER) | (1L << DATE) | (1L << INTEGER) | (1L << BLOB) | (1L << IDENTIFIER))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -127,9 +128,9 @@ public class HeleneParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(27); identifier();
-			setState(28); match(T__4);
-			setState(29); type();
+			setState(29); identifier();
+			setState(30); match(T__4);
+			setState(31); type();
 			}
 		}
 		catch (RecognitionException re) {
@@ -146,6 +147,9 @@ public class HeleneParser extends Parser {
 	public static class TypeContext extends ParserRuleContext {
 		public IntegerContext integer() {
 			return getRuleContext(IntegerContext.class,0);
+		}
+		public BlobContext blob() {
+			return getRuleContext(BlobContext.class,0);
 		}
 		public StringContext string() {
 			return getRuleContext(StringContext.class,0);
@@ -180,48 +184,54 @@ public class HeleneParser extends Parser {
 		TypeContext _localctx = new TypeContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_type);
 		try {
-			setState(38);
+			setState(41);
 			switch (_input.LA(1)) {
 			case STRING:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(31); string();
+				setState(33); string();
 				}
 				break;
 			case USER:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(32); user();
+				setState(34); user();
 				}
 				break;
 			case DATE:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(33); date();
+				setState(35); date();
 				}
 				break;
 			case INTEGER:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(34); integer();
+				setState(36); integer();
 				}
 				break;
 			case SLUG:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(35); slug();
+				setState(37); slug();
+				}
+				break;
+			case BLOB:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(38); blob();
 				}
 				break;
 			case T__2:
-				enterOuterAlt(_localctx, 6);
+				enterOuterAlt(_localctx, 7);
 				{
-				setState(36); list();
+				setState(39); list();
 				}
 				break;
 			case T__3:
-				enterOuterAlt(_localctx, 7);
+				enterOuterAlt(_localctx, 8);
 				{
-				setState(37); map();
+				setState(40); map();
 				}
 				break;
 			default:
@@ -258,7 +268,7 @@ public class HeleneParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(40); match(STRING);
+			setState(43); match(STRING);
 			}
 		}
 		catch (RecognitionException re) {
@@ -291,7 +301,7 @@ public class HeleneParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42); match(SLUG);
+			setState(45); match(SLUG);
 			}
 		}
 		catch (RecognitionException re) {
@@ -324,7 +334,7 @@ public class HeleneParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(44); match(USER);
+			setState(47); match(USER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -357,7 +367,40 @@ public class HeleneParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(46); match(DATE);
+			setState(49); match(DATE);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class BlobContext extends ParserRuleContext {
+		public TerminalNode BLOB() { return getToken(HeleneParser.BLOB, 0); }
+		public BlobContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_blob; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeleneVisitor ) return ((HeleneVisitor<? extends T>)visitor).visitBlob(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final BlobContext blob() throws RecognitionException {
+		BlobContext _localctx = new BlobContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_blob);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(51); match(BLOB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -386,11 +429,11 @@ public class HeleneParser extends Parser {
 
 	public final IntegerContext integer() throws RecognitionException {
 		IntegerContext _localctx = new IntegerContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_integer);
+		enterRule(_localctx, 16, RULE_integer);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(48); match(INTEGER);
+			setState(53); match(INTEGER);
 			}
 		}
 		catch (RecognitionException re) {
@@ -421,13 +464,13 @@ public class HeleneParser extends Parser {
 
 	public final ListContext list() throws RecognitionException {
 		ListContext _localctx = new ListContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_list);
+		enterRule(_localctx, 18, RULE_list);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(50); match(T__2);
-			setState(51); type();
-			setState(52); match(T__0);
+			setState(55); match(T__2);
+			setState(56); type();
+			setState(57); match(T__0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -461,26 +504,26 @@ public class HeleneParser extends Parser {
 
 	public final MapContext map() throws RecognitionException {
 		MapContext _localctx = new MapContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_map);
+		enterRule(_localctx, 20, RULE_map);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(54); match(T__3);
-			setState(56); 
+			setState(59); match(T__3);
+			setState(61); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(55); entity();
+				setState(60); entity();
 				}
 				}
-				setState(58); 
+				setState(63); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << SLUG) | (1L << USER) | (1L << DATE) | (1L << INTEGER) | (1L << IDENTIFIER))) != 0) );
-			setState(60); match(T__1);
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << SLUG) | (1L << USER) | (1L << DATE) | (1L << INTEGER) | (1L << BLOB) | (1L << IDENTIFIER))) != 0) );
+			setState(65); match(T__1);
 			}
 		}
 		catch (RecognitionException re) {
@@ -496,6 +539,7 @@ public class HeleneParser extends Parser {
 
 	public static class IdentifierContext extends ParserRuleContext {
 		public TerminalNode INTEGER() { return getToken(HeleneParser.INTEGER, 0); }
+		public TerminalNode BLOB() { return getToken(HeleneParser.BLOB, 0); }
 		public TerminalNode SLUG() { return getToken(HeleneParser.SLUG, 0); }
 		public TerminalNode STRING() { return getToken(HeleneParser.STRING, 0); }
 		public TerminalNode DATE() { return getToken(HeleneParser.DATE, 0); }
@@ -514,14 +558,14 @@ public class HeleneParser extends Parser {
 
 	public final IdentifierContext identifier() throws RecognitionException {
 		IdentifierContext _localctx = new IdentifierContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_identifier);
+		enterRule(_localctx, 22, RULE_identifier);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(62);
+			setState(67);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << SLUG) | (1L << USER) | (1L << DATE) | (1L << INTEGER) | (1L << IDENTIFIER))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << SLUG) | (1L << USER) | (1L << DATE) | (1L << INTEGER) | (1L << BLOB) | (1L << IDENTIFIER))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			consume();
@@ -539,22 +583,23 @@ public class HeleneParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\20C\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\21H\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4"+
-		"\f\t\f\3\2\6\2\32\n\2\r\2\16\2\33\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4"+
-		"\3\4\3\4\5\4)\n\4\3\5\3\5\3\6\3\6\3\7\3\7\3\b\3\b\3\t\3\t\3\n\3\n\3\n"+
-		"\3\n\3\13\3\13\6\13;\n\13\r\13\16\13<\3\13\3\13\3\f\3\f\3\f\2\2\r\2\4"+
-		"\6\b\n\f\16\20\22\24\26\2\3\3\2\b\r?\2\31\3\2\2\2\4\35\3\2\2\2\6(\3\2"+
-		"\2\2\b*\3\2\2\2\n,\3\2\2\2\f.\3\2\2\2\16\60\3\2\2\2\20\62\3\2\2\2\22\64"+
-		"\3\2\2\2\248\3\2\2\2\26@\3\2\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\33\3\2"+
-		"\2\2\33\31\3\2\2\2\33\34\3\2\2\2\34\3\3\2\2\2\35\36\5\26\f\2\36\37\7\3"+
-		"\2\2\37 \5\6\4\2 \5\3\2\2\2!)\5\b\5\2\")\5\f\7\2#)\5\16\b\2$)\5\20\t\2"+
-		"%)\5\n\6\2&)\5\22\n\2\')\5\24\13\2(!\3\2\2\2(\"\3\2\2\2(#\3\2\2\2($\3"+
-		"\2\2\2(%\3\2\2\2(&\3\2\2\2(\'\3\2\2\2)\7\3\2\2\2*+\7\b\2\2+\t\3\2\2\2"+
-		",-\7\t\2\2-\13\3\2\2\2./\7\n\2\2/\r\3\2\2\2\60\61\7\13\2\2\61\17\3\2\2"+
-		"\2\62\63\7\f\2\2\63\21\3\2\2\2\64\65\7\5\2\2\65\66\5\6\4\2\66\67\7\7\2"+
-		"\2\67\23\3\2\2\28:\7\4\2\29;\5\4\3\2:9\3\2\2\2;<\3\2\2\2<:\3\2\2\2<=\3"+
-		"\2\2\2=>\3\2\2\2>?\7\6\2\2?\25\3\2\2\2@A\t\2\2\2A\27\3\2\2\2\5\33(<";
+		"\f\t\f\4\r\t\r\3\2\6\2\34\n\2\r\2\16\2\35\3\3\3\3\3\3\3\3\3\4\3\4\3\4"+
+		"\3\4\3\4\3\4\3\4\3\4\5\4,\n\4\3\5\3\5\3\6\3\6\3\7\3\7\3\b\3\b\3\t\3\t"+
+		"\3\n\3\n\3\13\3\13\3\13\3\13\3\f\3\f\6\f@\n\f\r\f\16\fA\3\f\3\f\3\r\3"+
+		"\r\3\r\2\2\16\2\4\6\b\n\f\16\20\22\24\26\30\2\3\3\2\b\16D\2\33\3\2\2\2"+
+		"\4\37\3\2\2\2\6+\3\2\2\2\b-\3\2\2\2\n/\3\2\2\2\f\61\3\2\2\2\16\63\3\2"+
+		"\2\2\20\65\3\2\2\2\22\67\3\2\2\2\249\3\2\2\2\26=\3\2\2\2\30E\3\2\2\2\32"+
+		"\34\5\4\3\2\33\32\3\2\2\2\34\35\3\2\2\2\35\33\3\2\2\2\35\36\3\2\2\2\36"+
+		"\3\3\2\2\2\37 \5\30\r\2 !\7\3\2\2!\"\5\6\4\2\"\5\3\2\2\2#,\5\b\5\2$,\5"+
+		"\f\7\2%,\5\16\b\2&,\5\22\n\2\',\5\n\6\2(,\5\20\t\2),\5\24\13\2*,\5\26"+
+		"\f\2+#\3\2\2\2+$\3\2\2\2+%\3\2\2\2+&\3\2\2\2+\'\3\2\2\2+(\3\2\2\2+)\3"+
+		"\2\2\2+*\3\2\2\2,\7\3\2\2\2-.\7\b\2\2.\t\3\2\2\2/\60\7\t\2\2\60\13\3\2"+
+		"\2\2\61\62\7\n\2\2\62\r\3\2\2\2\63\64\7\13\2\2\64\17\3\2\2\2\65\66\7\r"+
+		"\2\2\66\21\3\2\2\2\678\7\f\2\28\23\3\2\2\29:\7\5\2\2:;\5\6\4\2;<\7\7\2"+
+		"\2<\25\3\2\2\2=?\7\4\2\2>@\5\4\3\2?>\3\2\2\2@A\3\2\2\2A?\3\2\2\2AB\3\2"+
+		"\2\2BC\3\2\2\2CD\7\6\2\2D\27\3\2\2\2EF\t\2\2\2F\31\3\2\2\2\5\35+A";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

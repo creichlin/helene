@@ -7,12 +7,13 @@ import java.util.WeakHashMap;
 
 public class ListenerReference {
   private Runnable runnable;
+  private Listeners listeners;
   
-  private static List<Runnable> forever = new ArrayList<>();
   private static Map<Object, List<Runnable>> forInstance = new WeakHashMap<>();
   
-  public ListenerReference(Runnable runnable) {
+  public ListenerReference(Listeners listeners, Runnable runnable) {
     this.runnable = runnable;
+    this.listeners = listeners;
   }
 
   public ListenerReference keepFor(Object instance) {
@@ -24,6 +25,7 @@ public class ListenerReference {
       }
     }
     forInstance.get(instance).add(runnable);
+    listeners.makeWeak(runnable);
     return this;
   }
 }

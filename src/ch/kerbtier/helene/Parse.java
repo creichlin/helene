@@ -7,11 +7,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import ch.kerbtier.helene.entities.EntityMap;
+import ch.kerbtier.helene.exceptions.ModelParseException;
 import ch.kerbtier.helene.impl.ImpEntityMap;
 import ch.kerbtier.helene.parser.HeleneLexer;
 import ch.kerbtier.helene.parser.HeleneParser;
@@ -44,6 +48,7 @@ public class Parse {
       HeleneLexer lexer = new HeleneLexer(input);
       CommonTokenStream tokens = new CommonTokenStream(lexer);
       HeleneParser parser = new HeleneParser(tokens);
+      parser.setErrorHandler(new BailErrorStrategy());
 
       RootContext tree = parser.root();
 
@@ -51,6 +56,8 @@ public class Parse {
 
       ImpVisitor iv = new ImpVisitor((ImpEntityMap)root);
       tree.accept(iv);
+    } catch (ParseCancellationException e) {
+      throw new ModelParseException(e);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

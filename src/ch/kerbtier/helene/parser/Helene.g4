@@ -5,7 +5,7 @@ root            : entity+;
 entity          : identifier ':'  type;
 
 
-type            : string | user | date | integer | slug | list | map;
+type            : string | user | date | integer | slug | blob | list | map;
 
 string          : STRING;
 
@@ -15,6 +15,8 @@ user            : USER;
 
 date            : DATE;
 
+blob            : BLOB;
+
 integer         : INTEGER;
 
 list            : '[' type ']';
@@ -22,7 +24,7 @@ list            : '[' type ']';
 map             : '{' entity+ '}';
 
 
-identifier        : IDENTIFIER | STRING | USER | DATE | INTEGER | SLUG;
+identifier        : IDENTIFIER | STRING | USER | DATE | INTEGER | SLUG | BLOB;
 
 STRING            : 'string';
 
@@ -33,6 +35,8 @@ USER              : 'user';
 DATE              : 'date';
 
 INTEGER           : 'integer';
+
+BLOB              : 'blob';
 
 IDENTIFIER        : [A-Za-z] ([A-Za-z0-9_])+;
 
