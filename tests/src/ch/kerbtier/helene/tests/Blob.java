@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import ch.kerbtier.helene.HBlob;
 import ch.kerbtier.helene.ModifiableNode;
 import ch.kerbtier.helene.tests.util.StorImpls;
 import ch.kerbtier.helene.tests.util.StoreFactory;
@@ -28,7 +29,7 @@ public class Blob extends StorImpls {
     
     mn.commit();
     
-    assertArrayEquals(data, ((ByteBuffer)store.getObject("post").get("image")).array());
+    assertArrayEquals(data, ((HBlob)store.getObject("post").get("image")).asArray());
   }
 
 }

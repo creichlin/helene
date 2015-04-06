@@ -76,6 +76,57 @@ public class BasicStoreObjectArrays extends StorImpls {
     
     assertEquals("quarzkopf", store.getObject("post").getObjects("comments").get(0).getString("name"));
   }
+  
+  @Test
+  public void swapTwoObjs() {
+    HList<HObject> comments = store.getObject("post").getObjects("comments");
+    ModifiableNode mn = comments.add();
+    mn.set("name", "rosenheidi");
+    mn.commit();
+    
+    mn = comments.add();
+    mn.set("name", "quarzkopf");
+    mn.commit();
+    
+    store.getObject("post").getObjects("comments").swap(0, 1);
+    
+    assertEquals("quarzkopf", store.getObject("post").getObjects("comments").get(0).getString("name"));
+    assertEquals("rosenheidi", store.getObject("post").getObjects("comments").get(1).getString("name"));
+  }
+
+  @Test
+  public void upObj() {
+    HList<HObject> comments = store.getObject("post").getObjects("comments");
+    ModifiableNode mn = comments.add();
+    mn.set("name", "rosenheidi");
+    mn.commit();
+    
+    mn = comments.add();
+    mn.set("name", "quarzkopf");
+    mn.commit();
+    
+    store.getObject("post").getObjects("comments").get(0).down();
+    
+    assertEquals("quarzkopf", store.getObject("post").getObjects("comments").get(0).getString("name"));
+    assertEquals("rosenheidi", store.getObject("post").getObjects("comments").get(1).getString("name"));
+  }
+
+  @Test
+  public void downObj() {
+    HList<HObject> comments = store.getObject("post").getObjects("comments");
+    ModifiableNode mn = comments.add();
+    mn.set("name", "rosenheidi");
+    mn.commit();
+    
+    mn = comments.add();
+    mn.set("name", "quarzkopf");
+    mn.commit();
+    
+    store.getObject("post").getObjects("comments").get(1).up();
+    
+    assertEquals("quarzkopf", store.getObject("post").getObjects("comments").get(0).getString("name"));
+    assertEquals("rosenheidi", store.getObject("post").getObjects("comments").get(1).getString("name"));
+  }
 
   @Test
   public void deleteFromArraysObjects() {

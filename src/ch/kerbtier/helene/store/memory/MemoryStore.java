@@ -35,14 +35,14 @@ public class MemoryStore extends MemoryHObject implements Store {
     xstream.omitField(MemoryHObject.class, "store");
     xstream.omitField(MemoryHObject.class, "def");
     xstream.omitField(MemoryHObject.class, "listeners");
+
+    xstream.omitField(MemoryHBaseList.class, "onChange");
     
     xstream.omitField(MemoryHObjectList.class, "store");
     xstream.omitField(MemoryHObjectList.class, "entity");
-    xstream.omitField(MemoryHObjectList.class, "onChange");
     
     xstream.omitField(MemoryHList.class, "store");
     xstream.omitField(MemoryHList.class, "entity");
-    xstream.omitField(MemoryHList.class, "onChange");
     
     xstream.omitField(MemoryStore.class, "xstream");
   }

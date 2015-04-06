@@ -13,6 +13,7 @@ public class Types {
   public static final Class<HeleneUser> USER = HeleneUser.class; 
   public static final Class<Date> DATE = Date.class; 
   public static final Class<HObject> OBJECT = HObject.class; 
+  public static final Class<HBlob> BLOB = HBlob.class; 
   @SuppressWarnings("rawtypes")
   public static final Class<HList> LIST = HList.class;
   
@@ -27,5 +28,6 @@ public class Types {
     TYPES_BACKEND.add(DATE);
     TYPES_BACKEND.add(OBJECT);
     TYPES_BACKEND.add(LIST);
+    TYPES_BACKEND.add(BLOB);
   }
 }

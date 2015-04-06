@@ -15,6 +15,9 @@ public interface HNode {
   
   <T> HList<T> getList(String name, Class<T> type);
   
+  void up();
+  void down();
+  
   // getters
   Date getDate(String name);
   String getString(String name);

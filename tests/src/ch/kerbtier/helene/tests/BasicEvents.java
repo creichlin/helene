@@ -54,6 +54,19 @@ public class BasicEvents extends StorImpls {
   }
 
   @Test
+  public void swapElementInList() {
+    
+    store.getObject("post").getObjects("comments").add().commit();
+    store.getObject("post").getObjects("comments").add().commit();
+
+    store.getObject("post").getObjects("comments").onChange(new SetTrue());
+    
+    assertFalse(eventRun);
+    store.getObject("post").getObjects("comments").swap(0, 1);
+    assertTrue(eventRun);
+  }
+
+  @Test
   public void addElementToPList() {
     store.getObject("post").getDates("hits").onChange(new SetTrue());
     
@@ -71,6 +84,18 @@ public class BasicEvents extends StorImpls {
 
     assertFalse(eventRun);
     store.getObject("post").getDates("hits").delete(0);
+    assertTrue(eventRun);
+  }
+
+  @Test
+  public void swapElementFromPList() {
+    store.getObject("post").getDates("hits").add(new Date());
+    store.getObject("post").getDates("hits").add(new Date());
+
+    store.getObject("post").getDates("hits").onChange(new SetTrue());
+
+    assertFalse(eventRun);
+    store.getObject("post").getDates("hits").swap(0, 1);
     assertTrue(eventRun);
   }
 

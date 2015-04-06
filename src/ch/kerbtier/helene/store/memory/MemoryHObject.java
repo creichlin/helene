@@ -77,6 +77,8 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
    * @param value
    */
   private void setData(String name, Object value) {
+    value = ValueConverters.convert(value);
+    
     Entity entity = def.get(name);
 
     Object oldValue = data.get(name);
@@ -100,7 +102,6 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
           }
         } else { // old value is null
           // might throw a duplicate slug exception
-          System.out.println(store);
           store.register((HSlug) value, this);
         }
       }
@@ -132,18 +133,39 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public <X> X get(String name, Class<X> expected) {
-
+    return get(name, expected, null);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public <X> X get(String name, Class<X> expected, Class<?> subExpected) {
     if (name.startsWith("#")) { // its a slug
-      if (HObject.class.isAssignableFrom(expected) || expected == null) {
-        return (X) store.get(new HSlug(name));
-      } else {
-        throw new WrongFieldTypeException("Slug return type is always HObject");
-      }
+      return getBySlug(name, expected);
     } else {
       Entity entity = def.get(name);
       if (expected == null || entity.is(expected)) {
+        if(entity.is(LIST)) {
+          Entity subType = ((EntityList) entity).get();
+          if (subExpected == null || subType.is(subExpected)) {
+            Object value = data.get(name);
+            if (value != null) {
+              if (entity.is(value.getClass())) {
+                return (X) value;
+              } else {
+                throw new WrongFieldDataException("invalid datatype in field '" + name + "' found '" + value.getClass()
+                    + "' instead of '" + expected.getName() + "'");
+              }
+            } else {
+              data.put(name, createListForType(name, subType.isOf()));
+              return (X) data.get(name);
+            }
+          } else {
+            throw new WrongFieldTypeException("field '" + name + "' is of type '[" + subType + "]' instead of '["
+                + subExpected.getName() + "]'");
+          }
+
+        }else {
+        
         Object value = data.get(name);
         if (value != null) {
           if (entity.is(value.getClass())) {
@@ -151,10 +173,7 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
           } else {
             // field is different type then there is
             data.remove(name);
-            return get(name, expected);
-            /*
-            throw new WrongFieldDataException("invalid datatype in field '" + name + "' found '" + value.getClass()
-                + "'");*/
+            return get(name, expected, subExpected);
           }
         } else {
 
@@ -165,6 +184,7 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
             return null; // TODO default
           }
         }
+        }
       }
 
       throw new WrongFieldTypeException("field '" + name + "' is of type '" + entity + "' instead of '"
@@ -174,36 +194,22 @@ public class MemoryHObject extends MemoryHNode implements HObject, EntitySubject
   }
 
   @SuppressWarnings("unchecked")
-  @Override
-  public <X> HList<X> getList(String name, Class<X> expected) {
-    Entity entity = def.get(name);
-
-    if (entity.is(HList.class)) {
-      Entity subType = ((EntityList) entity).get();
-      if (subType.is(expected)) {
-        Object value = data.get(name);
-        if (value != null) {
-          if (entity.is(value.getClass())) {
-            return (HList<X>) value;
-          } else {
-            throw new WrongFieldDataException("invalid datatype in field '" + name + "' found '" + value.getClass()
-                + "' instead of '" + expected.getName() + "'");
-          }
-        } else {
-          data.put(name, createFor(name, expected));
-          return (HList<X>) data.get(name);
-        }
-      } else {
-        throw new WrongFieldTypeException("field '" + name + "' is of type '[" + subType + "]' instead of '["
-            + expected.getName() + "]'");
-      }
+  private <X> X getBySlug(String name, Class<X> expected) {
+    if (HObject.class.isAssignableFrom(expected) || expected == null) {
+      return (X) store.get(new HSlug(name));
     } else {
-      throw new WrongFieldTypeException("field '" + name + "' is of type '" + entity + "' instead of '["
-          + expected.getName() + "]'");
+      throw new WrongFieldTypeException("Slug return type is always HObject");
     }
   }
 
-  private HNode createFor(String name, Class<?> type) {
+  @Override
+  @SuppressWarnings("unchecked")
+  public <X> HList<X> getList(String name, Class<X> expected) {
+    return get(name, LIST, expected);
+  }
+
+  
+  private HNode createListForType(String name, Class<?> type) {
     if (HObject.class.isAssignableFrom(type)) {
       return new MemoryHObjectList(store, MemoryHObject.this, (EntityMap) ((EntityList) def.get(name)).get());
     } else if (HList.class.isAssignableFrom(type)) {

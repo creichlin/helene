@@ -68,6 +68,17 @@ public class BasicStorePrimitiveArrays extends StorImpls {
     }
   }
 
+  @Test
+  public void swapTwoObjs() {
+    HList<Date> hits = store.getObject("post").getDates("hits");
+    hits.add(new Date(10000));
+    hits.add(new Date(20000));
+    
+    store.getObject("post").getDates("hits").swap(0, 1);
+    
+    assertEquals(new Date(20000), store.getObject("post").getDates("hits").get(0));
+    assertEquals(new Date(10000), store.getObject("post").getDates("hits").get(1));
+  }
 
   @Test
   public void addAndModNewObjectToList() {
