@@ -1,4 +1,4 @@
-package ch.kerbtier.helene.store.memory;
+package ch.kerbtier.helene.store.mod;
 
 import java.nio.ByteBuffer;
 
@@ -13,7 +13,7 @@ public class ValueConverters {
   }
 
   private static Object createHBlob(Object value) {
-    MemoryHBlob mhb = new MemoryHBlob();
+    ByteBufferHBlob mhb = new ByteBufferHBlob();
     mhb.setData(((ByteBuffer) value));
     value = mhb;
     return value;

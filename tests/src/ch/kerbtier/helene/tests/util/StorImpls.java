@@ -11,6 +11,7 @@ import ch.kerbtier.helene.Parse;
 import ch.kerbtier.helene.Store;
 import ch.kerbtier.helene.impl.ImpEntityMap;
 import ch.kerbtier.helene.store.memory.MemoryStore;
+import ch.kerbtier.helene.store.sql.SqlStore;
 
 @RunWith(Parameterized.class)
 public class StorImpls {
@@ -29,14 +30,16 @@ public class StorImpls {
       }
     };
     
-    /*StoreFactory dom = new StoreFactory() {
+    
+    StoreFactory h2sql = new StoreFactory() {
       @Override
       public Store create() {
-        return new JDomStore(root);
+        return new SqlStore(root, "org.h2.Driver", "jdbc:h2:mem:name1;USER=test;PASSWORD=test;INIT=DROP ALL OBJECTS", Paths.get("tmp"));
       }
-    };*/
+      
+    };
     
-    return Arrays.asList(new Object[][]{{mem}});
+    return Arrays.asList(new Object[][]{{mem}, {h2sql}});
   }
   
   public StorImpls(StoreFactory sf) {

@@ -15,6 +15,7 @@ import ch.kerbtier.helene.HSlug;
 import ch.kerbtier.helene.Store;
 import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.exceptions.DuplicateSlugException;
+import ch.kerbtier.helene.store.mod.ByteBufferHBlob;
 
 public class MemoryStore extends MemoryHObject implements Store {
   
@@ -29,6 +30,7 @@ public class MemoryStore extends MemoryHObject implements Store {
     xstream.alias("list", MemoryHList.class);
     xstream.alias("root", MemoryStore.class);
     xstream.alias("slug", HSlug.class);
+    xstream.alias("blob", ByteBufferHBlob.class);
     
     xstream.omitField(MemoryHNode.class, "parent");
 
@@ -71,7 +73,8 @@ public class MemoryStore extends MemoryHObject implements Store {
       slugs.put(slug, object);
     }
   }
-
+  
+  @Override
   public HObject get(HSlug slug) {
     return slugs.get(slug);
   }

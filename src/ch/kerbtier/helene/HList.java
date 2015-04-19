@@ -7,8 +7,8 @@ public interface HList<T> extends HNode, Iterable<T> {
   T get(int cnt);
   
   ModifiableNode add();
-  void add(Object value);
-  void set(int i, Object value);
+  void add(T value);
+  void set(int i, T value);
   void delete(int i);
   void swap(int i1, int i2);
   

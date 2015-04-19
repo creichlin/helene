@@ -168,4 +168,14 @@ public class BasicStoreObjectArrays extends StorImpls {
     assertEquals(0, store.getObject("post").getObjects("comments").size());
   }
 
+  @Test(expected = UnsupportedOperationException.class)
+  public void addPrimitiveToList() {
+    store.getObject("post").getObjects("comments").add(store.getObject("post"));
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void setPrimitiveToList() {
+    store.getObject("post").getObjects("comments").add().commit();
+    store.getObject("post").getObjects("comments").set(0, store.getObject("post").getObjects("comments").get(0));
+  }
 }

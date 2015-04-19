@@ -6,4 +6,8 @@ public interface Entity {
   Class<?> isOf();
   
   String getType();
+  
+  Entity getParent();
+
+  String getName();
 }

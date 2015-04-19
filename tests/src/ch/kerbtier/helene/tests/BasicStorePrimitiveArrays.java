@@ -7,8 +7,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ch.kerbtier.helene.HList;
-import ch.kerbtier.helene.HObject;
-import ch.kerbtier.helene.ModifiableNode;
 import ch.kerbtier.helene.exceptions.WrongFieldTypeException;
 import ch.kerbtier.helene.tests.util.StorImpls;
 import ch.kerbtier.helene.tests.util.StoreFactory;
@@ -106,5 +104,9 @@ public class BasicStorePrimitiveArrays extends StorImpls {
     assertEquals(0, store.getObject("post").getDates("hits").size());
   }
 
-
+  @Test(expected = UnsupportedOperationException.class) 
+  public void checkObjectAddMethod() {
+    store.getObject("post").getDates("hits").add();
+  }
+  
 }

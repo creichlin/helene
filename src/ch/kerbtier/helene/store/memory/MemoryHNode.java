@@ -1,7 +1,8 @@
 package ch.kerbtier.helene.store.memory;
 
 import ch.kerbtier.helene.HList;
-import ch.kerbtier.helene.HNodeDefault;
+import ch.kerbtier.helene.HNode;
+import ch.kerbtier.helene.def.HNodeDefault;
 import ch.kerbtier.helene.entities.Entity;
 
 public abstract class MemoryHNode extends HNodeDefault {
@@ -40,6 +41,8 @@ public abstract class MemoryHNode extends HNodeDefault {
       }
     }
   }
+  
+  public abstract void delete(HNode hnode);
   
   abstract void reconstruct(MemoryHNode parentp, MemoryStore store, Entity ent);
 }

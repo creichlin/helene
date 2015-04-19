@@ -21,7 +21,6 @@ public class BasicEvents extends StorImpls {
   @Test
   public void changeBasicProperty() {
     store.getObject("post").onChange("content", new SetTrue());
-
     ModifiableNode mn = store.getObject("post").update();
     mn.set("content", "hanswurst");
     assertFalse(eventRun);

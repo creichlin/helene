@@ -9,7 +9,7 @@ public interface HObject extends HNode {
   
   Set<String> getProperties();
   
-  String getName();
-  
   ModifiableNode update();
+  
+  void delete(String field);
 }

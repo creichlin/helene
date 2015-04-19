@@ -1,4 +1,4 @@
-package ch.kerbtier.helene;
+package ch.kerbtier.helene.def;
 
 import static ch.kerbtier.helene.Types.DATE;
 import static ch.kerbtier.helene.Types.INTEGER;
@@ -8,8 +8,12 @@ import static ch.kerbtier.helene.Types.STRING;
 import java.math.BigInteger;
 import java.util.Date;
 
-public abstract class HNodeDefault implements HNode {
+import ch.kerbtier.helene.HList;
+import ch.kerbtier.helene.HNode;
+import ch.kerbtier.helene.HObject;
 
+public abstract class HNodeDefault implements HNode {
+  
   @Override
   public Object get(String name) {
     throw new UnsupportedOperationException();

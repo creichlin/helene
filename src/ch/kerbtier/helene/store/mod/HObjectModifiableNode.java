@@ -13,7 +13,6 @@ import ch.kerbtier.helene.ModifiableNode;
 import ch.kerbtier.helene.entities.Entity;
 import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.exceptions.WrongFieldTypeException;
-import ch.kerbtier.helene.store.memory.ValueConverters;
 
 public class HObjectModifiableNode implements ModifiableNode {
   

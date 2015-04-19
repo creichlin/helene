@@ -5,8 +5,7 @@ import java.util.Date;
 
 public interface HNode {
   void delete();
-  void delete(HNode node);
-  String getName(HNode node);
+  String getName();
   
   // generic getters
   Object get(String name);

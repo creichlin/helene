@@ -1,0 +1,36 @@
+blog: {
+  title: string
+  slug: slug
+  posts: [{
+    title: string
+    date: date
+    slug: slug
+    image: blob
+    content: string
+    abstract: string
+    more: string
+  }]
+}
+
+faq: {
+  slug: slug
+  entries: [{
+    question: string
+    answer: string
+  }]
+}
+
+content: {
+  pages: [{
+    title: string
+    slug: slug
+    content: string
+  }]
+}
+
+site: {
+  title: string
+  googleSiteVerification: string
+  analyticsId: string
+  msvalidate: string
+}

@@ -1,11 +1,11 @@
 package ch.kerbtier.helene.store.memory;
 
 import ch.kerbtier.helene.HList;
-import ch.kerbtier.helene.HNode;
 import ch.kerbtier.helene.ModifiableNode;
 import ch.kerbtier.helene.entities.Entity;
 import ch.kerbtier.helene.entities.EntityList;
 import ch.kerbtier.helene.events.Listeners;
+import ch.kerbtier.helene.store.mod.ValueConverters;
 
 public class MemoryHList<X> extends MemoryHBaseList<X> implements HList<X> {
 
@@ -46,7 +46,7 @@ public class MemoryHList<X> extends MemoryHBaseList<X> implements HList<X> {
   }
 
   @Override
-  public String getName(HNode node) {
-    return getParent().getName(node);
+  public String getName() {
+    return entity.getName();
   }
 }

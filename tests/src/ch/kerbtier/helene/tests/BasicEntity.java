@@ -11,6 +11,7 @@ import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.Parse;
 import ch.kerbtier.helene.entities.Entity;
 import ch.kerbtier.helene.entities.EntityMap;
+import ch.kerbtier.helene.entities.IntegerEntity;
 import ch.kerbtier.helene.entities.SlugEntity;
 import ch.kerbtier.helene.entities.StringEntity;
 import ch.kerbtier.helene.impl.ImpEntityMap;
@@ -21,7 +22,7 @@ public class BasicEntity {
   
   @Before
   public void init() {
-    root = new ImpEntityMap();
+    root = new ImpEntityMap(null, "");
     Parse.extend(root, Paths.get("tests", "post.model"));
   }
   
@@ -33,6 +34,11 @@ public class BasicEntity {
   @Test()
   public void checkSlugType() {
     assertTrue(root.getObject("post").get("slug") instanceof SlugEntity);
+  }
+  
+  @Test()
+  public void checkIntegerType() {
+    assertTrue(root.getObject("post").get("count") instanceof IntegerEntity);
   }
   
 
@@ -47,4 +53,38 @@ public class BasicEntity {
     Entity entity = root.get("post");
     assertTrue(entity.is(HObject.class));
   }
+  
+  @Test()
+  public void checkPostName() {
+    assertEquals("post", root.getObject("post").getName());
+  }
+  
+  @Test()
+  public void checkCommentName() {
+    assertEquals("post.comments", root.getObject("post").getList("comments").getName());
+  }
+  
+  @Test()
+  public void checkCommentItemName() {
+    assertEquals("post.comments._", root.getObject("post").getList("comments").get().getName());
+  }
+  
+  @Test()
+  public void checkCommentFieldName() {
+    assertEquals("post.comments._.email", root.getObject("post").getList("comments").getObject().get("email").getName());
+  }
+  
+  @Test()
+  public void checkHitsList() {
+    assertEquals("post.hits", root.getObject("post").getList("hits").getName());
+  }
+
+  @Test()
+  public void checkHitsField() {
+    assertEquals("post.hits._", root.getObject("post").getList("hits").get().getName());
+  }
+  
+  
+  
 }
+

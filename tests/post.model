@@ -16,4 +16,5 @@ post: {
     foo: string
     bar: string
   }
+  count: integer
 }

@@ -7,6 +7,10 @@ import ch.kerbtier.helene.entities.EntityMap;
 
 public class ImpEntityList extends ImpEntity implements EntityList {
 
+  public ImpEntityList(Entity parent, String name) {
+    super(parent, name);
+  }
+
   private Entity type;
   
   @Override
@@ -20,7 +24,7 @@ public class ImpEntityList extends ImpEntity implements EntityList {
 
   @Override
   public String getType() {
-    return "[" + type.getType() + "]";
+    return "list";
   }
 
   @Override

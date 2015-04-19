@@ -1,0 +1,5 @@
+object_list: [{
+  title: string
+  content: string
+  slug: slug
+}]

@@ -1,14 +1,14 @@
-package ch.kerbtier.helene.store.memory;
+package ch.kerbtier.helene.store.mod;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.xml.bind.DatatypeConverter;
+import com.google.common.io.BaseEncoding;
 
 import ch.kerbtier.helene.HBlob;
 
-public class MemoryHBlob implements HBlob {
+public class ByteBufferHBlob implements HBlob {
 
   private byte[] data;
   private String hash;
@@ -28,7 +28,6 @@ public class MemoryHBlob implements HBlob {
     return data;
   }
 
-  @Override
   public void setData(ByteBuffer byteBuffer) {
     data = byteBuffer.array();
     if (data != null) {
@@ -39,7 +38,7 @@ public class MemoryHBlob implements HBlob {
         throw new RuntimeException(e);
       }
       byte[] dg = md.digest(data);
-      hash = DatatypeConverter.printHexBinary(dg);
+      hash = BaseEncoding.base64Url().encode(dg, 0, 30);
     } else {
       hash = null;
     }
