@@ -25,5 +25,9 @@ public class CreatAndMod {
     new Benchmark(new Test2Read(mem), count);
     new Benchmark(new Test2Read(h2File), count);
     new Benchmark(new Test2Read(h2Mem), count);
+
+    new Benchmark(new Test3Delete(mem), count);
+    new Benchmark(new Test3Delete(h2File), count);
+    new Benchmark(new Test3Delete(h2Mem), count);
   }
 }

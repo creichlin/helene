@@ -14,14 +14,17 @@ CREATE TABLE attobj (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  value int(11) NOT NULL
+  value int(11) NOT NULL,
+  FOREIGN KEY(parent) REFERENCES object(id),
+  FOREIGN KEY(value) REFERENCES object(id)
 );
 
 CREATE TABLE attstr (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  value VARCHAR
+  value VARCHAR,
+  CONSTRAINT attstr_parent FOREIGN KEY(parent) REFERENCES object(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE attslug (
@@ -29,7 +32,8 @@ CREATE TABLE attslug (
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
   value VARCHAR(2048),
-  UNIQUE(value)
+  UNIQUE(value),
+  FOREIGN KEY(parent) REFERENCES object(id)
 );
 
 CREATE INDEX attslug_value ON attslug(value);
@@ -38,38 +42,35 @@ CREATE TABLE attdate (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  value datetime
+  value datetime,
+  FOREIGN KEY(parent) REFERENCES object(id)
 );
 
 CREATE TABLE attint (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  value VARCHAR(32)
+  value VARCHAR(32),
+  FOREIGN KEY(parent) REFERENCES object(id)
 );
 
 CREATE TABLE attblob (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  value VARCHAR(64)
+  value VARCHAR(64),
+  FOREIGN KEY(parent) REFERENCES object(id)
 );
 
 CREATE TABLE attlist (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  value int(11) NOT NULL
+  value int(11) NOT NULL,
+  FOREIGN KEY(parent) REFERENCES object(id),
+  FOREIGN KEY(value) REFERENCES list(id),
 );
 
-
-CREATE INDEX attobj_parent ON attobj(parent);
-CREATE INDEX attstr_parent ON attstr(parent);
-CREATE INDEX attslug_parent ON attslug(parent);
-CREATE INDEX attdate_parent ON attdate(parent);
-CREATE INDEX attint_parent ON attint(parent);
-CREATE INDEX attblob_parent ON attblob(parent);
-CREATE INDEX attlist_parent ON attlist(parent);
 
 CREATE INDEX attobj_name ON attobj(name);
 CREATE INDEX attstr_name ON attstr(name);
@@ -85,21 +86,27 @@ CREATE TABLE lsobj (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   index int(11) NOT NULL,
-  value int(11) NOT NULL
+  value int(11) NOT NULL,
+  FOREIGN KEY(parent) REFERENCES list(id),
+  FOREIGN KEY(value) REFERENCES object(id)
 );
 
 CREATE TABLE lsstr (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   index int(11) NOT NULL,
-  value VARCHAR
+  value VARCHAR,
+  FOREIGN KEY(parent) REFERENCES list(id)
+
 );
 
 CREATE TABLE lsdate (
   id int(11) PRIMARY KEY AUTO_INCREMENT,
   parent int(11) NOT NULL,
   index int(11) NOT NULL,
-  value datetime
+  value datetime,
+  FOREIGN KEY(parent) REFERENCES list(id)
+
 );
 
 CREATE INDEX lsobj_parent ON lsobj(parent);

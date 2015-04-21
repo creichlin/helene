@@ -5,38 +5,23 @@ import ch.kerbtier.webb.db.Table;
 
 
 @Table(name = "attobj")
-public class DaoAttobj implements DaoAtt<Integer> {
-
-  @Column(key = true)
-  private int id = -1;
-
-  @Column
-  private String name;
-
-  @Column
-  private int parent;
+public class DaoAttobj extends DaoAtt<Integer> {
 
   @Column
   private int value;
 
 
   public DaoAttobj(int parent, String name, int value) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
     this.value = value;
   }
   
   public DaoAttobj(int parent, String name) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
   }
   
   public DaoAttobj() {
     // for db
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   @Override
@@ -47,13 +32,5 @@ public class DaoAttobj implements DaoAtt<Integer> {
   @Override
   public void setValue(Integer value) {
     this.value = value;
-  }
-
-  public int getParent() {
-    return parent;
-  }
-
-  public String getName() {
-    return name;
   }
 }

@@ -1,9 +1,13 @@
 package ch.kerbtier.helene.tests.util;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -31,7 +35,7 @@ public class StorImpls {
     };
     
     
-    StoreFactory h2sql = new StoreFactory() {
+    StoreFactory h2sqlmem = new StoreFactory() {
       @Override
       public Store create() {
         return new SqlStore(root, "org.h2.Driver", "jdbc:h2:mem:name1;USER=test;PASSWORD=test;INIT=DROP ALL OBJECTS", Paths.get("tmp"));
@@ -39,7 +43,27 @@ public class StorImpls {
       
     };
     
-    return Arrays.asList(new Object[][]{{mem}, {h2sql}});
+    final Path dbpath = Paths.get("tmp").toAbsolutePath();
+    
+    FileUtils.deleteQuietly(dbpath.toFile());
+    
+    try {
+      Files.createDirectories(dbpath);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
+    
+    StoreFactory h2sqlfile = new StoreFactory() {
+      private int count = 0;
+      @Override
+      public Store create() {
+        return new SqlStore(root, "org.h2.Driver", "jdbc:h2:file:" + dbpath.resolve("h222_" + (count++)) + ";USER=test;PASSWORD=test", dbpath);
+      }
+      
+    };
+    
+    return Arrays.asList(new Object[][]{{mem}, {h2sqlmem}, {h2sqlfile}});
   }
   
   public StorImpls(StoreFactory sf) {

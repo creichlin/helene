@@ -16,7 +16,7 @@ import ch.kerbtier.helene.store.sql.dao.DaoAttslug;
 import ch.kerbtier.helene.store.sql.dao.DaoObject;
 import ch.kerbtier.webb.db.Db;
 import ch.kerbtier.webb.db.DbPs;
-import ch.kerbtier.webb.db.NoMatchFound;
+import ch.kerbtier.webb.db.exceptions.NoMatchFound;
 
 public class SqlStore extends SqlHObject implements Store {
 

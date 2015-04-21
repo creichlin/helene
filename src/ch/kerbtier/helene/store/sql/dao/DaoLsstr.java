@@ -5,24 +5,14 @@ import ch.kerbtier.webb.db.Table;
 
 
 @Table(name = "lsstr")
-public class DaoLsstr implements DaoLs<String> {
-
-  @Column(key = true)
-  private int id = -1;
-
-  @Column
-  private int index;
-
-  @Column
-  private int parent;
+public class DaoLsstr extends DaoLs<String> {
 
   @Column
   private String value;
 
 
   public DaoLsstr(int parent, int index, String value) {
-    this.parent = parent;
-    this.index = index;
+    super(parent, index);
     this.value = value;
   }
   
@@ -30,26 +20,9 @@ public class DaoLsstr implements DaoLs<String> {
     // for db
   }
 
-  public void setId(int id) {
-    this.id = id;
-  }
-
   @Override
   public String getValue() {
     return value;
-  }
-
-  @Override
-  public void setIndex(int index) {
-    this.index = index;
-  }
-
-  public int getIndex() {
-    return index;
-  }
-
-  public int getParent() {
-    return parent;
   }
 
   @Override

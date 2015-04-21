@@ -5,24 +5,14 @@ import ch.kerbtier.webb.db.Table;
 
 
 @Table(name = "lsobj")
-public class DaoLsobj implements DaoLs<Integer> {
-
-  @Column(key = true)
-  private int id = -1;
-
-  @Column
-  private int index;
-
-  @Column
-  private int parent;
+public class DaoLsobj extends DaoLs<Integer> {
 
   @Column
   private int value;
 
 
   public DaoLsobj(int parent, int index, int value) {
-    this.parent = parent;
-    this.index = index;
+    super(parent, index);
     this.value = value;
   }
   
@@ -30,26 +20,9 @@ public class DaoLsobj implements DaoLs<Integer> {
     // for db
   }
 
-  public void setId(int id) {
-    this.id = id;
-  }
-
   @Override
   public Integer getValue() {
     return value;
-  }
-
-  @Override
-  public void setIndex(int index) {
-    this.index = index;
-  }
-
-  public int getIndex() {
-    return index;
-  }
-
-  public int getParent() {
-    return parent;
   }
 
   @Override

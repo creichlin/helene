@@ -5,38 +5,23 @@ import ch.kerbtier.webb.db.Table;
 
 
 @Table(name = "attlist")
-public class DaoAttlist implements DaoAtt<Integer> {
-
-  @Column(key = true)
-  private int id = -1;
-
-  @Column
-  private String name;
-
-  @Column
-  private int parent;
+public class DaoAttlist extends DaoAtt<Integer> {
 
   @Column
   private int value;
 
 
   public DaoAttlist(int parent, String name, int value) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
     this.value = value;
   }
   
   public DaoAttlist(int parent, String name) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
   }
   
   public DaoAttlist() {
     // for db
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   @Override

@@ -18,8 +18,8 @@ public class SqlHBlob implements HBlob {
     this.hash = hash;
   }
 
-  public void init(Path path) {
-    this.path = path;
+  public void init(Path pathParam) {
+    this.path = pathParam;
   }
 
   @Override

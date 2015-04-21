@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.Types;
 import ch.kerbtier.helene.entities.EntityList;
 import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.exceptions.DuplicateSlugException;
@@ -20,7 +21,7 @@ import ch.kerbtier.helene.store.sql.dao.DaoObject;
 import ch.kerbtier.webb.db.Db;
 import ch.kerbtier.webb.db.DbPs;
 import ch.kerbtier.webb.db.DbRs;
-import ch.kerbtier.webb.db.NoMatchFound;
+import ch.kerbtier.webb.db.exceptions.NoMatchFound;
 
 public class SqlHObjectList extends SqlHBaseList<HObject> implements EntitySubject {
   private EntityList def;
@@ -30,24 +31,6 @@ public class SqlHObjectList extends SqlHBaseList<HObject> implements EntitySubje
     super(store, dao);
     this.def = def;
     this.elementDef = def.getObject();
-  }
-
-  @Override
-  public void delete() {
-    Db db = getStore().getDb();
-    try {
-      try {
-        DaoAttlist dl = db.selectFirst(DaoAttlist.class, "value = ?", dao.getId());
-        db.delete(dl);
-        db.delete(dao);
-      } catch(NoMatchFound e) {
-        // no luck, must be a list of list
-      }
-      db.commit();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      db.rollback();
-    }
   }
 
   @Override
@@ -116,31 +99,13 @@ public class SqlHObjectList extends SqlHBaseList<HObject> implements EntitySubje
   }
 
   @Override
+  public void delete() {
+    accept(new DeleteVisitor(getStore().getDb()));
+  }
+
+  @Override
   public void delete(int i) {
-    Db db = getStore().getDb();
-
-    try {
-
-      List<DaoLsobj> elements = db.select(DaoLsobj.class, "parent = ? order by index", dao.getId());
-
-      int index = 0;
-
-      for (DaoLsobj e : elements) {
-        if (index == i) {
-          db.delete(e);
-        } else if (index > i) {
-          e.setIndex(index - 1);
-          db.update(e);
-        }
-        index++;
-      }
-
-      db.commit();
-      listeners.trigger(dao);
-    } catch (SQLException e) {
-      e.printStackTrace();
-      db.rollback();
-    }
+    ((SqlHObject)get(i)).accept(new DeleteVisitor(getStore().getDb()));
   }
 
   @Override
@@ -217,6 +182,15 @@ public class SqlHObjectList extends SqlHBaseList<HObject> implements EntitySubje
   @Override
   public String getName() {
     return def.getName();
+  }
+
+  @Override
+  public Object accept(Visitor<? extends Object> visitor) {
+    return visitor.visit(this);
+  }
+
+  public void triggerDeleteEvent(int index) {
+    listeners.trigger(dao);
   }
 
 }

@@ -15,7 +15,7 @@ import ch.kerbtier.helene.store.sql.dao.DaoObject;
 import ch.kerbtier.helene.store.sql.dao.SqlHBlob;
 import ch.kerbtier.webb.db.Db;
 import ch.kerbtier.webb.db.DbPs;
-import ch.kerbtier.webb.db.NoMatchFound;
+import ch.kerbtier.webb.db.exceptions.NoMatchFound;
 
 public class SqlGetOperation implements Worker {
 
@@ -48,7 +48,7 @@ public class SqlGetOperation implements Worker {
         attlist = ps.selectFirst(DaoAttlist.class);
         list = db.select(DaoList.class, attlist.getValue());
       } catch (NoMatchFound e) {
-        // object doesnt exist, create it
+        // list doesnt exist, create it
         list = new DaoList(def.getName());
         db.create(list);
         attlist = new DaoAttlist(subject.getDao().getId(), name, list.getId());
@@ -76,9 +76,10 @@ public class SqlGetOperation implements Worker {
         attlist = ps.selectFirst(DaoAttlist.class);
         list = db.select(DaoList.class, attlist.getValue());
       } catch (NoMatchFound e) {
-        // object doesnt exist, create it
+        // list doesnt exist, create it
         list = new DaoList(def.getName());
         db.create(list);
+        
         attlist = new DaoAttlist(subject.getDao().getId(), name, list.getId());
         db.create(attlist);
       }
@@ -108,17 +109,10 @@ public class SqlGetOperation implements Worker {
         // object doesnt exist, create it
 
         object = new DaoObject(def.getName());
-        DbPs cps = db.prepareCreate(DaoObject.class);
-        cps.setEntityColumns(object);
-        cps.executeUpdate();
-        object.setId(cps.getGeneratedIntKey());
+        db.create(object);
 
         attobj = new DaoAttobj(subject.getDao().getId(), name, object.getId());
-        cps = db.prepareCreate(DaoAttobj.class);
-        cps.setEntityColumns(attobj);
-        cps.executeUpdate();
-        attobj.setId(cps.getGeneratedIntKey());
-
+        db.create(attobj);
       }
       db.commit();
       return (X) new SqlHObject(subject.getStore(), def, object);
@@ -131,11 +125,9 @@ public class SqlGetOperation implements Worker {
 
   @Override
   public <X> X byValue(String name, Class<X> expected, Entity def) {
-
     X value = null;
 
     String sql = "select * from att" + def.getType() + " where parent = ? and name = ?";
-
     Db db = subject.getStore().getDb();
 
     try {

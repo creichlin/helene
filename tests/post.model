@@ -1,7 +1,6 @@
 post: {
   image: blob
   title: string
-  author: user
   slug: slug
   date: date
   content: string

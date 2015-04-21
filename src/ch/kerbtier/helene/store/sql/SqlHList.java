@@ -14,13 +14,13 @@ import ch.kerbtier.helene.store.sql.dao.DaoLs;
 import ch.kerbtier.webb.db.Db;
 import ch.kerbtier.webb.db.DbPs;
 import ch.kerbtier.webb.db.DbRs;
-import ch.kerbtier.webb.db.NoMatchFound;
+import ch.kerbtier.webb.db.exceptions.NoMatchFound;
 
 public class SqlHList<T> extends SqlHBaseList<T> {
 
   private EntityList def;
   private Entity elementDef;
-  private Class<? extends DaoLs> type;
+  Class<? extends DaoLs> type;
 
   public SqlHList(SqlStore store, EntityList def, DaoList dao) {
     super(store, dao);
@@ -35,27 +35,6 @@ public class SqlHList<T> extends SqlHBaseList<T> {
       throw new RuntimeException();
     }
   }
-
-  @Override
-  public void delete() {
-    Db db = getStore().getDb();
-    try {
-      try {
-        DaoAttlist dl = db.selectFirst(DaoAttlist.class, "value = ?", dao.getId());
-        db.delete(dl);
-        db.delete(dao);
-      } catch(NoMatchFound e) {
-        // no luck, must be a list of list
-      }
-      db.commit();
-      listeners.trigger(dao);
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-      db.rollback();
-    }
-  }
-
 
   @Override
   public String getName() {
@@ -175,24 +154,26 @@ public class SqlHList<T> extends SqlHBaseList<T> {
 
   @Override
   public void delete(int i) {
+    Atomic atomic = new Atomic(getStore().getDb());
     try {
-      int index = 0;
-      for (DaoLs<T> ls : getStore().getDb().select(type, "parent = ? order by index", dao.getId())) {
-
-        if (index == i) {
-          getStore().getDb().delete(ls);
-        } else if (index > i) {
-          ls.setIndex(index - 1);
-        }
-        index++;
+      try {
+        DaoLs<T> dao = getStore().getDb().selectFirst(type, "parent = ? and index = ?", this.dao.getId(), i);
+        atomic.delete(dao);
+      }catch(NoMatchFound e) {
+        // can happen, be silent
       }
 
-      getStore().getDb().commit();
+      atomic.commit();
       listeners.trigger(dao);
     } catch (SQLException e) {
       e.printStackTrace();
-      getStore().getDb().rollback();
+      atomic.rollback();
     }
+  }
+  
+  @Override
+  public void delete() {
+    accept(new DeleteVisitor(getStore().getDb()));
   }
 
   @Override
@@ -214,5 +195,10 @@ public class SqlHList<T> extends SqlHBaseList<T> {
       e.printStackTrace();
       getStore().getDb().rollback();
     }
+  }
+
+  @Override
+  public Object accept(Visitor<? extends Object> visitor) {
+    return visitor.visit(this);
   }
 }

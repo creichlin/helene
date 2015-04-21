@@ -2,7 +2,7 @@ package ch.kerbtier.helene.store.sql;
 
 import ch.kerbtier.helene.def.HNodeDefault;
 
-public abstract class SqlHNode extends HNodeDefault {
+public abstract class SqlHNode extends HNodeDefault implements Visitable{
 
   private SqlStore store;
 

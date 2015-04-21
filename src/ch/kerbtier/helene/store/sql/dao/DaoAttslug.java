@@ -6,38 +6,23 @@ import ch.kerbtier.webb.db.Table;
 
 
 @Table(name = "attslug")
-public class DaoAttslug implements DaoAtt<HSlug> {
-
-  @Column(key = true)
-  private int id = -1;
-
-  @Column
-  private String name;
-
-  @Column
-  private int parent;
+public class DaoAttslug extends DaoAtt<HSlug> {
 
   @Column
   private String value;
 
 
   public DaoAttslug(int parent, String name, HSlug value) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
     this.value = value == null ? null : value.getValue();
   }
   
   public DaoAttslug(int parent, String name) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
   }
   
   public DaoAttslug() {
     // for db
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   @Override
@@ -48,9 +33,5 @@ public class DaoAttslug implements DaoAtt<HSlug> {
   @Override
   public void setValue(HSlug value) {
     this.value = value == null ? null : value.getValue();
-  }
-
-  public int getParent() {
-    return parent;
   }
 }

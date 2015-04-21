@@ -4,37 +4,22 @@ import ch.kerbtier.webb.db.Column;
 import ch.kerbtier.webb.db.Table;
 
 @Table(name = "attstr")
-public class DaoAttstr implements DaoAtt<String> {
-
-  @Column(key = true)
-  private int id = -1;
+public class DaoAttstr extends DaoAtt<String> {
 
   @Column
   private String value;
 
-  @Column
-  private String name;
-
-  @Column
-  private int parent;
-
   public DaoAttstr(int parent, String name, String value) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
     this.value = value;
   }
 
   public DaoAttstr(int parent, String name) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
   }
 
   public DaoAttstr() {
     // for db
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   @Override
@@ -42,6 +27,7 @@ public class DaoAttstr implements DaoAtt<String> {
     return value;
   }
 
+  @Override
   public void setValue(String value) {
     this.value = value;
   }

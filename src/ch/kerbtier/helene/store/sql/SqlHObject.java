@@ -14,29 +14,30 @@ import ch.kerbtier.helene.HBlob;
 import ch.kerbtier.helene.HList;
 import ch.kerbtier.helene.HObject;
 import ch.kerbtier.helene.ModifiableNode;
+import ch.kerbtier.helene.Types;
 import static ch.kerbtier.helene.Types.*;
 import ch.kerbtier.helene.def.GetOperation;
 import ch.kerbtier.helene.entities.Entity;
 import ch.kerbtier.helene.entities.EntityList;
 import ch.kerbtier.helene.entities.EntityMap;
 import ch.kerbtier.helene.events.ListenerReference;
+import ch.kerbtier.helene.events.Map2Listeners;
 import ch.kerbtier.helene.events.MappedListeners;
 import ch.kerbtier.helene.store.mod.EntitySubject;
 import ch.kerbtier.helene.store.mod.HObjectModifiableNode;
 import ch.kerbtier.helene.store.sql.dao.DaoAtt;
-import ch.kerbtier.helene.store.sql.dao.DaoAttobj;
 import ch.kerbtier.helene.store.sql.dao.DaoList;
 import ch.kerbtier.helene.store.sql.dao.DaoLsobj;
 import ch.kerbtier.helene.store.sql.dao.DaoObject;
 import ch.kerbtier.webb.db.Db;
-import ch.kerbtier.webb.db.NoMatchFound;
+import ch.kerbtier.webb.db.exceptions.NoMatchFound;
 
 public class SqlHObject extends SqlHNode implements HObject, EntitySubject {
 
-  private DaoObject dao = null;
+  DaoObject dao = null;
   private EntityMap def;
 
-  private static Map<DaoObject, MappedListeners<String>> changeListeners = new HashMap<>();
+  private static Map2Listeners<DaoObject, String> changeListeners = new Map2Listeners<>();
 
   public SqlHObject(@NotNull SqlStore store, @NotNull EntityMap def, @NotNull DaoObject dao) {
     super(store);
@@ -117,10 +118,7 @@ public class SqlHObject extends SqlHNode implements HObject, EntitySubject {
           }
         }
       }
-      MappedListeners<String> listeners = changeListeners.get(dao);
-      if (listeners != null) {
-        listeners.trigger(field);
-      }
+      changeListeners.trigger(dao, field);
     }
   }
 
@@ -141,16 +139,7 @@ public class SqlHObject extends SqlHNode implements HObject, EntitySubject {
 
   @Override
   public ListenerReference onChange(String attrib, Runnable run) {
-    MappedListeners<String> listeners = changeListeners.get(dao);
-
-    if (listeners == null) {
-      synchronized (changeListeners) {
-        listeners = new MappedListeners<>();
-        changeListeners.put(dao, listeners);
-      }
-    }
-
-    return listeners.on(attrib, run);
+    return changeListeners.on(dao, attrib, run);
   }
 
   @Override
@@ -187,34 +176,6 @@ public class SqlHObject extends SqlHNode implements HObject, EntitySubject {
     SqlHObject other = (SqlHObject) obj;
 
     return dao.equals(other.dao);
-  }
-
-  @Override
-  public void delete() {
-    Db db = getStore().getDb();
-    try {
-      try {
-        DaoAttobj att = db.selectFirst(DaoAttobj.class, "value = ?", dao.getId());
-        DaoObject obj = db.select(DaoObject.class, att.getParent());
-        
-        System.out.println("path:" + obj.getType() + ":" + getStore().getDef().get(obj.getType()));
-        
-        
-        new SqlHObject(getStore(), getStore().getDef().getObject(obj.getType()), obj).delete(att.getName());
-      } catch (NoMatchFound e) {
-        try {
-          DaoLsobj ls = db.selectFirst(DaoLsobj.class, "value = ?", dao.getId());
-          DaoList list = db.select(DaoList.class, ls.getParent());
-          new SqlHObjectList(getStore(), getStore().getDef().getList(list.getType()), list).delete(ls.getIndex());
-        } catch (NoMatchFound e2) {
-          // verweist
-        }
-      }
-      db.commit();
-    } catch (SQLException e) {
-      e.printStackTrace();
-      db.rollback();
-    }
   }
 
   protected SqlHObjectList getParentList() {
@@ -279,19 +240,35 @@ public class SqlHObject extends SqlHNode implements HObject, EntitySubject {
   @Override
   public void delete(String field) {
     Entity ent = def.get(field);
-    Db db = getStore().getDb();
+
+    Atomic atomic = new Atomic(getStore().getDb());
     try {
-      try {
-        DaoAtt<?> att = db.selectFirst(Util.ATT_TYPES.get(ent.getType()), "parent = ? and name = ?", dao.getId(),
-            field);
-        db.delete(att);
-      } catch (NoMatchFound e) {
-        // then don't delete it
+      if (atomic.exists(this, field)) {
+        if (ent.is(Types.OBJECT) || ent.is(Types.LIST)) {
+          SqlHNode child = (SqlHNode) get(field);
+          child.accept(new DeleteVisitor(getStore().getDb()));
+        } else {
+          atomic.delete(this, field);
+        }
       }
-      db.commit();
+      atomic.commit();
     } catch (SQLException e) {
-      db.rollback();
+      atomic.rollback();
       e.printStackTrace();
     }
+  }
+  
+  @Override
+  public void delete() {
+    accept(new DeleteVisitor(getStore().getDb()));
+  }
+
+  public void triggerDeleteEvent(String name) {
+    changeListeners.trigger(dao, name);
+  }
+
+  @Override
+  public Object accept(Visitor<? extends Object> visitor) {
+    return visitor.visit(this);
   }
 }

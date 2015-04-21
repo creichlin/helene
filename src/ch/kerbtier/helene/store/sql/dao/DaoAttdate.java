@@ -6,39 +6,22 @@ import ch.kerbtier.webb.db.Column;
 import ch.kerbtier.webb.db.Table;
 
 @Table(name = "attdate")
-public class DaoAttdate implements DaoAtt<Date> {
-
-  @Column(key = true)
-  private int id = -1;
+public class DaoAttdate extends DaoAtt<Date> {
 
   @Column
   private Date value;
 
-  @Column
-  private String name;
-
-  @Column
-  private int parent;
-
-
-
   public DaoAttdate(int parent, String name, Date value) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
     this.value = value;
   }
 
   public DaoAttdate(int parent, String name) {
-    this.parent = parent;
-    this.name = name;
+    super(parent, name);
   }
 
   public DaoAttdate() {
     // for db
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   @Override
@@ -46,6 +29,7 @@ public class DaoAttdate implements DaoAtt<Date> {
     return value;
   }
 
+  @Override
   public void setValue(Date value) {
     this.value = value;
   }

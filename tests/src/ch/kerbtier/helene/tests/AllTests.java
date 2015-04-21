@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ BasicEntity.class, EntityPathGetters.class, BasicStore.class, BasicObjectTests.class, BasicStoreObjectArrays.class, BasicStorePrimitiveArrays.class,
-    InvalidTypes.class, BasicEvents.class, Slugs.class, Blob.class })
+    InvalidTypes.class, BasicEvents.class, Slugs.class, Blob.class, Delete.class })
 public class AllTests {
   // body
 }

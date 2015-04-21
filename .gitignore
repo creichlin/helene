@@ -1,3 +1,7 @@
-bin
-dist
-lib
+/bin
+/dist
+/build
+/lib
+/tests/porter/h23c.mv.db
+/tmp
+/tests/porter/bin
