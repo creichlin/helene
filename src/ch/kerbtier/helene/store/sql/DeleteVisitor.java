@@ -39,7 +39,7 @@ public class DeleteVisitor implements Visitor<Object> {
         atomic.commit();
       }
 
-      list.listeners.trigger(list.dao);
+      SqlHBaseList.listeners.trigger(list.dao);
     } catch (SQLException e) {
       e.printStackTrace();
       atomic.rollback();
@@ -117,7 +117,7 @@ public class DeleteVisitor implements Visitor<Object> {
     }
   }
 
-  private void deleteListOfObject(SqlHBaseList list, Atomic atomic, int iid) throws SQLException {
+  private void deleteListOfObject(SqlHBaseList<?> list, Atomic atomic, int iid) throws SQLException {
     DaoAttlist attParent = db.selectFirst(DaoAttlist.class, "value = ?", iid);
     DaoObject objParent = db.select(DaoObject.class, attParent.getParent());
 

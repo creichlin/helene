@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 
@@ -26,7 +29,7 @@ public class SqlStore extends SqlHObject implements Store {
   public SqlStore(EntityMap def, String driver, String url, Path binaryFolder) {
     super(def);
     this.binaryFolder = binaryFolder;
-    
+
     try {
       Class.forName(driver);
       db = new Db(url);
@@ -70,7 +73,7 @@ public class SqlStore extends SqlHObject implements Store {
   protected SqlStore getStore() {
     return this;
   }
-  
+
   public Path getBinaryFolder() {
     return binaryFolder;
   }
@@ -101,8 +104,43 @@ public class SqlStore extends SqlHObject implements Store {
     return null;
   }
 
+  @Override
+  public boolean isAvailable(HSlug slug) {
+    if (slug == null) {
+      return true;
+    }
+
+    try {
+      try {
+        DaoAttslug das = db.selectFirst(DaoAttslug.class, "value = ?", slug.getValue());
+        db.commit();
+        return false;
+      } catch (NoMatchFound e) {
+        db.commit();
+        return true;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      db.rollback();
+      return false;
+    }
+  }
+
   public Db getDb() {
     return db;
+  }
+
+  public Path writeBackupTo(Path path) {
+    DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmm");
+    path = path.toAbsolutePath().resolve("h2-backup-" + df.format(new Date()) + ".zip");
+    try {
+      getDb().prepareStatement("BACKUP TO '" + path + "'").executeUpdate();
+      getDb().commit();
+    } catch (SQLException e) {
+      getDb().rollback();
+      e.printStackTrace();
+    }
+    return path;
   }
 
   public Entity getEntity(String type) {

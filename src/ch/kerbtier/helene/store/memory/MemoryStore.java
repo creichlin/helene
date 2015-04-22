@@ -79,6 +79,11 @@ public class MemoryStore extends MemoryHObject implements Store {
     return slugs.get(slug);
   }
   
+  @Override
+  public boolean isAvailable(HSlug slug) {
+    return slugs.get(slug) == null;
+  }
+  
   public void write(Path path) {
     try {
       FileUtils.write(path.toFile(), xstream.toXML(this));

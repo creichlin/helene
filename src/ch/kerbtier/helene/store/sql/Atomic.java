@@ -53,7 +53,7 @@ public class Atomic {
    * @param lsElement
    * @throws SQLException
    */
-  public void delete(DaoLs lsElement) throws SQLException {
+  public void delete(DaoLs<?> lsElement) throws SQLException {
     db.delete(lsElement);
     TableModel<? extends DaoLs> tm = Introspector.getModel(lsElement.getClass());
     DbPs ps = db.prepareStatement("update `" + tm.getName() + "` SET index=index-1 WHERE parent = ? and index > ?");
@@ -66,8 +66,8 @@ public class Atomic {
     db.delete(dao);
   }
 
-  public void delete(Class type, String where, int id) throws SQLException {
-    TableModel<? extends DaoLs> tm = Introspector.getModel(type);
+  public void delete(Class<? extends DaoLs<?>> type, String where, int id) throws SQLException {
+    TableModel<? extends DaoLs<?>> tm = Introspector.getModel(type);
     DbPs ps = db.prepareStatement("delete from `" + tm.getName() + "` where " + where);
     ps.setInt(1, id);
     ps.executeUpdate();
