@@ -16,7 +16,7 @@ public class GetOperation {
       Worker worker) {
     if (name.startsWith("#")) { // its a slug
 
-      if (HObject.class.isAssignableFrom(expected) || expected == null) {
+      if (expected == null || HObject.class.isAssignableFrom(expected)) {
         return (X) store.get(new HSlug(name));
       } else {
         throw new WrongFieldTypeException("Slug return type is always HObject");
