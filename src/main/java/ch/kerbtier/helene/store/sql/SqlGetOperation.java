@@ -14,8 +14,6 @@ import ch.kerbtier.helene.store.sql.dao.DaoList;
 import ch.kerbtier.helene.store.sql.dao.DaoObject;
 import ch.kerbtier.helene.store.sql.dao.SqlHBlob;
 import ch.kerbtier.hopsdb.Db;
-import ch.kerbtier.hopsdb.DbPs;
-import ch.kerbtier.hopsdb.DbRs;
 import ch.kerbtier.hopsdb.exceptions.NoMatchFound;
 
 public class SqlGetOperation implements Worker {
@@ -128,6 +126,7 @@ public class SqlGetOperation implements Worker {
       db.commit();
     } catch (NoMatchFound e) {
       // that's fine, return default, so far always null
+      db.commit();
     } catch (SQLException e) {
       // only read access
       db.rollback();

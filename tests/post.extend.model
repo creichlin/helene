@@ -1,7 +1,0 @@
-post: {
-  title2: string
-
-  comments: [{
-    name2: string
-  }]
-}
