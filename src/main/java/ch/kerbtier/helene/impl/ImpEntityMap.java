@@ -42,7 +42,7 @@ public class ImpEntityMap extends ImpEntity implements EntityMap {
     
     Entity e = map.get(name);
     if (e == null) {
-      throw new UndefinedFieldException("field " + name + " does not exist in " + this.getName());
+      throw new UndefinedFieldException("field " + name + " does not exist in " + this.getName() + " for entity " + getName());
     }
     return e;
   }

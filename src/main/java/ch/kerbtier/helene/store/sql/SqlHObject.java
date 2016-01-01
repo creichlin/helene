@@ -71,8 +71,8 @@ public class SqlHObject extends SqlHNode implements HObject, EntitySubject {
   }
 
   @Override
-  public <T> T get(String name, Class<T> type) {
-    return get(name, type, null);
+  public <T> T get(String name, Class<T> expected) {
+    return get(name, expected, null);
   }
 
   public <X> X get(String name, Class<X> expected, Class<?> subExpected) {

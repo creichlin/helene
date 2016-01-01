@@ -41,7 +41,7 @@ dependencies {
   compile 'com.thoughtworks.xstream:xstream:1.4.8'
   compile 'ch.kerbtier.struwwel:struwwel:0.1.+'
   compile 'ch.kerbtier.hops-db:hops-db:0.1.+'
-  
+  compile 'com.google.code.gson:gson:2.5'
   
   testCompile 'com.h2database:h2:1.4.188'
   testCompile 'junit:junit:4.12'
