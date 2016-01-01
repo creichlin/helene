@@ -1,4 +1,6 @@
-/bin
 /tests/porter/h23c.mv.db
-/tmp
 /tests/porter/bin
+/bin/
+/tmp/
+/build/
+/.gradle/
